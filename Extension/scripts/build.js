@@ -1,6 +1,6 @@
-const { build } = require('esbuild');
-const sveltePlugin = require('esbuild-svelte');
-const sveltePreprocess = require('svelte-preprocess');
+import { build } from 'esbuild';
+import * as sveltePlugin from 'esbuild-svelte';
+import * as sveltePreprocess from 'svelte-preprocess';
 
 const isProdBuild = process.argv.includes('--prod');
 

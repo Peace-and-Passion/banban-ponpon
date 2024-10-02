@@ -1,10 +1,10 @@
 <!--
 
-  Browser extension template for Banban board
+     Browser extension template for Banban board
 
-  @author Hirano Satoshi
-  @copyright 2024 Peace and Passion
-  @since 2024/10/02
+     @author Hirano Satoshi
+     @copyright 2024 Peace and Passion
+     @since 2024/10/02
 -->
 
 <script lang="ts">
