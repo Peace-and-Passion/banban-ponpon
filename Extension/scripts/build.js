@@ -17,11 +17,23 @@ async function main() {
     tsconfig: './tsconfig.json',
     drop: isProdBuild ? ['console'] : undefined
   };
+  // modifiy: for content.svelte
   const contentJob = build({
     ...commonConfig,
     entryPoints: ['./src/content.ts'],
-    outfile: './dist/content.js'
+    outfile: './dist/content.js',
+    mainFields: ['svelte', 'module', 'main', 'browser'],
+    plugins: [
+      sveltePlugin({
+        preprocess: sveltePreprocess()
+      })
+    ]
   });
+  // const contentJob = build({
+  //   ...commonConfig,
+  //   entryPoints: ['./src/content.ts'],
+  //   outfile: './dist/content.js'
+  // });
 
   const backgroundJob = build({
     ...commonConfig,

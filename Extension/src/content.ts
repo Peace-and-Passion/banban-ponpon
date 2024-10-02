@@ -1,20 +1,20 @@
-import browser from 'webextension-polyfill';
-import { type BrowserMessageType, type ColorScheme } from './models';
+/**
 
-browser.runtime.onMessage.addListener(message => {
-  console.log('got message', message);
-  switch (message.type as BrowserMessageType) {
-    case 'getColorScheme': {
-      return Promise.resolve(getColorScheme());
-    }
-  }
-});
+  Browser extension loader for Banban board
 
-function getColorScheme() {
-  let scheme: ColorScheme = 'light';
-  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  if (darkModeMediaQuery.matches) {
-    scheme = 'dark';
-  }
-  return scheme;
-}
+  @author Hirano Satoshi
+  @copyright 2024 Peace and Passion
+  @since 2024/10/02
+ */
+
+import App from './content.svelte';
+
+//console.log('content.ts: start');
+
+// load content.svelte
+let targetElement = document.createElement('div');
+targetElement.id = 'content-script-root';
+document.body.appendChild(targetElement);
+new App({ target: targetElement });
+
+//console.log('content.ts: new App() end');
