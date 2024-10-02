@@ -54,6 +54,7 @@
    border: none;
    background-color: red;
    z-index: 1000;
+   cursor: pointer;
  }
 
  #done-button {
@@ -67,5 +68,6 @@
    background-color: #f4f4fe;
    z-index: 1000;
    font-size: 1.2rem;
+   cursor: pointer;
  }
 </style>
