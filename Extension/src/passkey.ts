@@ -6,7 +6,9 @@
  */
 import * as cookie from 'cookie';
 export const D_ADDRESS_SEPARATOR = '//';
-
+export const PasskeyCheckLoginTimeout = 62 * 1000;  // Login rentrance timeout: 62 sec
+export const HTTP_FORBIDDEN = 403;         // Passkey server returns HTTP_FORBIDDEN
+type UniqID = string;
 export const is_local = true;
 export const webExtID =  window.location.origin;
 export let originUri = "https://request.land";
@@ -37,7 +39,7 @@ interface AuthenticateOptions {
 }
 
 export class AuthenticatorPasskeys {
-    accessToken: string;                  // access token
+    accessToken: string|undefined;                  // access token
     user: User;                           // current user
     userID: string = ANON_USERID;
     org: Org;                             // current org
@@ -84,11 +86,12 @@ export class AuthenticatorPasskeys {
 
     /** Authenticate user or register passkey in another tab for Chrome PWA which does not support passkeys */
     public async processInAnotherTab(land_id: string|undefined, register: boolean): Promise<void> {
-        return new Promise<void>(async (resolve, reject) => {
+        return new Promise<void>(async (resolve, _reject) => {
             try {
                 await this.processInAnotherTabBody(land_id, register, true);
                 resolve();
-            } catch (err) {
+            } catch (_err: any) {
+                const err: Error = _err;
                 // ouch! opening a tab blocked because user interaction such as pressing button is required.
                 // open a open-proxy-dialog and wait for the user to press the button that calls processInAnotherTabBody().
                 if (err.message === "Tab blocked") {
@@ -145,7 +148,7 @@ export class AuthenticatorPasskeys {
 
         newTab.focus();
 
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<void>((resolve, _reject) => {
             const handleMessage = async (event: MessageEvent) => {
                 if (event.origin !== originUri || event.data?.openerID !== this.openerID_send) {
                     return;
@@ -201,7 +204,7 @@ export class AuthenticatorPasskeys {
      */
     public async checkLogin(): Promise<void> {
         const sleep = (msec: number): Promise<void> => { return new Promise(resolve => setTimeout((resolve), msec)); }
-        const timeout = Date.now() + conf.PasskeyCheckLoginTimeout;
+        const timeout = Date.now() + PasskeyCheckLoginTimeout;
         let showMsg = 0;      // show waiting... log msg only once
 
         try {
@@ -277,7 +280,7 @@ export class AuthenticatorPasskeys {
             throw new Error('Passkey canceled');
 
         } catch (err) {
-            this.checkLoginInProgress = err;
+            this.checkLoginInProgress = err as Error;
 
             if (err instanceof NetworkError && await navigator?.serviceWorker?.getRegistration('/')) {
                 // network error and serviceworker exists -> AccessToken for offline mode
@@ -286,7 +289,7 @@ export class AuthenticatorPasskeys {
                 this.checkLoginInProgress = false;
                 return;  // ignore error
             }
-            if (err.message !== 'Passkey canceled') console.log('CheckLogin: ' + err);
+            if ((err as Error).message !== 'Passkey canceled') console.log('CheckLogin: ' + err);
             throw err;   // rethrow err
         } finally {
             if (this.checkLoginInProgress === true) {
@@ -369,9 +372,9 @@ export class AuthenticatorPasskeys {
                 this.saveAccessToken(verificationResponse);
                 this.toast(this.tr('user.Switched to', {landid: land_id}));
             } else { // error, try Passkey sign in
-                if (verificationResp.status == conf.HTTP_FORBIDDEN) {
+                if (verificationResp.status == HTTP_FORBIDDEN) {
                     // signin may raise an error
-                    const oldUserID: UniqID = this.userID;
+                    // const oldUserID: UniqID = this.userID;
                     await this.authenticate({land_id_or_userID: land_id});
                     this.toast(this.tr('user.Switched to', {landid: land_id}));
                     return;
@@ -383,7 +386,8 @@ export class AuthenticatorPasskeys {
                     throw new NetworkError(msg);
                 }
             }
-        } catch(err) {
+        } catch(_err: any) {
+            const err: Error = _err;
             if (err instanceof NetworkError && await navigator?.serviceWorker?.getRegistration('/')) {
                 //? what can we do?
             }
@@ -393,7 +397,7 @@ export class AuthenticatorPasskeys {
                 // not found on server
                 return this.showErrorDialog(this.tr("passkey.not found", {user: land_id}));
             }
-            this.toast(this.tr(err));
+            this.toast(this.tr(err.message));
             throw err;
         }
     }
@@ -442,36 +446,32 @@ export class AuthenticatorPasskeys {
      @param all          True to remove all localStorage and sessionStorage values for all users on the device.
      */
     clearLoginState(continueable: boolean, navigateToTop=true, isLogin=false, keepRefreshToken=false, all=false) {
-        this.authenticator.clearAccessToken(all);
+        this.accessToken = undefined;
 
-        if (!keepRefreshToken) {
-            this.removeSavedUserOrg();
+        if (localStorage.userID === this.userID) {
+            localStorage.removeItem('userID');
+            localStorage.removeItem('land_id');
         }
-        this.lastAuthrizationTime = 0;
 
-        // peace and passion
-        this.isUnreadInitialized = false;
-        this.unreadEntityManager = undefined;
-        // peace and passion
+        sessionStorage.removeItem('userID');
+        sessionStorage.removeItem('land_id');
 
-        if (!continueable) {
-            if (all) {
-                // remove all localStorage and sessionStorage values except ones in the remain list.
-                //   removal of ls.RT-exp-userID informs logout to other tabs
-                const remain = ['notifySound', 'expertMode', 'alwaysShowProjectList', 'land_id']
-                for (let key in localStorage) {
-                    if (remain.indexOf(key) < 0) localStorage.removeItem(key);
-                }
-                for (let key in sessionStorage) {
-                    if (remain.indexOf(key) < 0) sessionStorage.removeItem(key);
-                }
+        // keep RT-exp-userID during switchUser() because other tabs watches it to detect logout().
+        // So, deauthenticate() removes RT-exp-userID.
 
-                if (accessTokenBackup && navigateToTop) {
-                    App.app.router.navigate('', {replace: true});
-                }
+        // if (!keepRefreshToken) {
+        //     this.removeSavedUserOrg();
+        // }
 
-                this.resetOfflineCache();
-            }
+        // remove all localStorage and sessionStorage values except ones in the remain list.
+        //   removal of ls.RT-exp-userID informs logout to other tabs
+        for (let key in localStorage) {
+            if (remain.indexOf(key) < 0) localStorage.removeItem(key);
+        }
+        for (let key in sessionStorage) {
+            if (remain.indexOf(key) < 0) sessionStorage.removeItem(key);
+        }
+
             this.resetUnreadForLogout(this.userID, isLogin);
             //sessionStorage.removeItem('land_id');
             sessionStorage.removeItem('setup');
@@ -589,24 +589,6 @@ export class AuthenticatorPasskeys {
      @param all             True to deauthenticate all users on the device.
      */
     public clearAccessToken(all=false) {
-        this.accessToken = this.passkeyUserID = undefined;
-
-        if (!all) {
-            localStorage.removeItem('AT-' + this.userID);
-            localStorage.removeItem('AT-exp-' + this.userID);
-            localStorage.removeItem('login-' + this.userID);  // issues storage event
-
-        }
-        if (localStorage.userID === this.userID) {
-            localStorage.removeItem('userID');
-            localStorage.removeItem('land_id');
-        }
-
-        sessionStorage.removeItem('userID');
-        sessionStorage.removeItem('land_id');
-
-        // keep RT-exp-userID during switchUser() because other tabs watches it to detect logout().
-        // So, deauthenticate() removes RT-exp-userID.
     }
 
     /**
