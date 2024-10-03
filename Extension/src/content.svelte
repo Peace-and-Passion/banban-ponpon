@@ -10,6 +10,8 @@
 <script lang="ts">
  console.log('content.svelte started');
  import './style.css';
+ import { Passkey } from './passkey';
+ import Modal from './resources/Modal.svelte';
 
  let multiSelectButton;
  let isSelectionMode: boolean       = false;
@@ -17,12 +19,16 @@
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
 
+ let showLoginModal;
+ const passkey = new Passkey();
+
  function enableSelectionMode() {
      if (isSelectionMode) {
          cancelSelectionMode();
      } else {
          isSelectionMode = true;
          clickTrackEnabled = true;
+         showLoginModal = true;
      }
  }
  function cancelSelectionMode() {
@@ -40,6 +46,16 @@
     Done
   </button>
 {/if}
+
+<Modal bind:showModal={showLoginModal}>
+  <h2 slot="header">
+    Singin
+  </h2>
+
+  <button on:click={() => passkey.authenticate({land_id_or_userID: 'hhh//h-com'})}>
+    Login
+  </button>
+</Modal>
 
 <style>
  #start-button {

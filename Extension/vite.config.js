@@ -4,6 +4,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import path from 'path';
 import sveltePreprocess from 'svelte-preprocess';
 import manifest from './manifest';
+import os from 'os';
 
 export default defineConfig(({ mode }) => {
     const production = mode === 'production';
@@ -39,5 +40,9 @@ export default defineConfig(({ mode }) => {
                 '@': path.resolve(__dirname, 'src'),
             },
         },
+        define: {
+            PRODUCTION: JSON.stringify(production),
+            BUILD_HOST: JSON.stringify(os.hostname())
+        }
     };
 });
