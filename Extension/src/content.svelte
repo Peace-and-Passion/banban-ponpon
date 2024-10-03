@@ -53,7 +53,7 @@
    padding: 0;
    border: none;
    background-color: red;
-   z-index: 1000;
+   z-index: 10000;
    cursor: pointer;
  }
 
@@ -66,7 +66,7 @@
    overflow: hidden;
    border: none;
    background-color: #f4f4fe;
-   z-index: 1000;
+   z-index: 10000;
    font-size: 1.2rem;
    cursor: pointer;
  }

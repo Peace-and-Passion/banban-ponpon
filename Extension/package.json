@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "background.js",
-    "scripts": {
+  "scripts": {
     "dev": "vite",
     "build2": "vite build",
     "format": "prettier --write .",
