@@ -8,8 +8,15 @@
 -->
 
 <script lang="ts">
- console.log('content.svelte started');
+ import Button, { Label } from '@smui/button';
+
+ // init Svelte Material UI with 'svelte' theme
+ import 'svelte-material-ui/themes/svelte.css'
+
+ // load our global CSS
  import './style.css';
+
+ console.log('content.svelte started');
 
  let multiSelectButton;
  let isSelectionMode: boolean       = false;
@@ -36,13 +43,13 @@
 </button>
 
 {#if isSelectionMode}
-  <button id="done-button" on:click={cancelSelectionMode}>
-    Done
-  </button>
+  <Button id="done-button" on:click={cancelSelectionMode} variant="raised">
+    <Label>Done</Label>
+  </Button>
 {/if}
 
 <style>
- #start-button {
+ :global(#start-button) {
    position: fixed;
    top: 50px;
    left: 0;
@@ -57,17 +64,11 @@
    cursor: pointer;
  }
 
- #done-button {
+ :global(#done-button) {
    position: fixed;
    top: 78px;
    left: 18px;
-   padding: 4px 8px;
-   border-radius: 4px;
-   overflow: hidden;
-   border: none;
-   background-color: #f4f4fe;
    z-index: 10000;
-   font-size: 1.2rem;
-   cursor: pointer;
+   border-radius: 50px;
  }
 </style>
