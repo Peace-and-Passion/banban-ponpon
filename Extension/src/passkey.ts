@@ -70,7 +70,7 @@ export class Passkey {
      * @return A promise if success.
      * @throws Error with "cancel", "forgot_password", "signup"...
      */
-    public async authenticate(options: AuthenticateOptions): Promise<void> {
+    public async authenticate(options: AuthenticateOptions): Promise<string> {
         console.log('authenticate: start');
         return await this.processInAnotherTab(options.land_id_or_userID, false);
 
@@ -86,11 +86,11 @@ export class Passkey {
     }
 
     /** Authenticate user or register passkey in another tab for Chrome PWA which does not support passkeys */
-    public async processInAnotherTab(land_id: string|undefined, register: boolean): Promise<void> {
-        return new Promise<void>(async (resolve, _reject) => {
+    public async processInAnotherTab(land_id: string|undefined, register: boolean): Promise<string> {
+        return new Promise<string>(async (resolve, _reject) => {
             try {
                 await this.processInAnotherTabBody(land_id, register, true);
-                resolve();
+                resolve(this.accessToken as string);
             } catch (_err: any) {
                 const err: Error = _err;
                 // ouch! opening a tab blocked because user interaction such as pressing button is required.
@@ -100,7 +100,7 @@ export class Passkey {
 
                     // processInAnotherTabBody() closes the dialog after receiving a message from the passkey proxy.
                     this.openProxyDialogPromise.then(() => {
-                        resolve();
+                        resolve(this.accessToken as string);
                     });
                     return;
                 }
@@ -135,12 +135,6 @@ export class Passkey {
                     return;
                 }
 
-                if (event.data?.msg === 'yama') {
-                    newTab?.postMessage('kawa', '*');
-                    console.log('received yama');
-                    return;
-                }
-
                 window.removeEventListener("message", handleMessage);
 
                 // close the tab
@@ -152,8 +146,8 @@ export class Passkey {
                 this.tabInProgress = false;
 
                 // set AT and userID if no error
-                if (!event.data?.error) {
-                    this.verifyServerResponseBody(event.data);
+                if (event.data?.msg === 'login end') {
+                    // this.verifyServerResponseBody(event.data);
                     console.log('authenticateInAnotherTab: OK');
                 }
 
@@ -472,7 +466,7 @@ export class Passkey {
     We use localStorage with keys with userID such like AT-userID because multiple apps in tabs with
     the same user account can share the same access token.
      */
-    private saveAccessToken(verificationResponse: usertypes._VerifyAuthenticationResponse) {
+    private saveAccessToken(verificationResponse: _VerifyAuthenticationResponse) {
         this.accessToken = verificationResponse.at;
         this.userID = verificationResponse.userID;
 
@@ -484,6 +478,7 @@ export class Passkey {
             'land_id': verificationResponse.land_id,
         //{ 'login-', 'true');
         });
+
         // // cause storage event listeners on other tabs to abort ceremonies
         // localStorage.removeItem('abort-dialog-' + this.passkeyUserID);
         // setTimeout(() => {

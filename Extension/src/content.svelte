@@ -19,7 +19,9 @@
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
 
- let showLoginModal;
+ let showLoginModal                 = false;
+ let  showLoginDoneModal            = false;
+
  const passkey = new Passkey();
 
  function enableSelectionMode() {
@@ -29,11 +31,19 @@
          isSelectionMode = true;
          clickTrackEnabled = true;
          showLoginModal = true;
+         showLoginDoneModal = false;
      }
  }
  function cancelSelectionMode() {
      isSelectionMode = false;
      clickTrackEnabled = false;
+     showLoginDoneModal = false;
+ }
+
+ async function login() {
+     const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
+     showLoginModal = false;
+     showLoginDoneModal = true;
  }
 
 </script>
@@ -47,17 +57,35 @@
   </button>
 {/if}
 
-<Modal bind:showModal={showLoginModal}>
+<Modal bind:showModal={showLoginModal} id="signin-dialog">
+    <h2 slot="header" style="width: 300px;">
+      Singin2
+    </h2>
+
+    <button id="signin-button" on:click={login} >
+      Signin
+    </button>
+</Modal>
+
+<Modal bind:showModal={showLoginDoneModal} id="signed-dialog">
   <h2 slot="header">
-    Singin
+    You are signed-in!
   </h2>
 
-  <button on:click={() => passkey.authenticate({land_id_or_userID: 'hhh//h-com'})}>
-    Login
-  </button>
+  {passkey.accessToken}
+
 </Modal>
 
 <style>
+ #signin-dialog,#signed-dialog {
+   width: 300px;
+ }
+ #signin-button {
+   background: #a0b2f4;
+   color: white;
+   font-size: 2rem;
+   padding: 2rem 4rem;
+ }
  #start-button {
    position: fixed;
    top: 50px;
