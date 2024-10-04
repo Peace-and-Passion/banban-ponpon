@@ -8,10 +8,18 @@
 -->
 
 <script lang="ts">
- console.log('content.svelte started');
+ import Button, { Label } from '@smui/button';
+
+ // init Svelte Material UI with 'svelte' theme
+ import 'svelte-material-ui/themes/svelte.css'
+
+ // load our global CSS
  import './style.css';
- import { Passkey } from './passkey';
- import Modal from './resources/Modal.svelte';
+ // import { test } from './login.svelte';
+ import Login from './login.svelte';
+ let loginComponent;
+
+ console.log('content.svelte started');
 
  let multiSelectButton;
  let isSelectionMode: boolean       = false;
@@ -19,74 +27,44 @@
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
 
- let showLoginModal                 = false;
- let  showLoginDoneModal            = false;
-
- const passkey = new Passkey();
-
  function enableSelectionMode() {
      if (isSelectionMode) {
          cancelSelectionMode();
      } else {
          isSelectionMode = true;
          clickTrackEnabled = true;
-         showLoginModal = true;
-         showLoginDoneModal = false;
      }
  }
  function cancelSelectionMode() {
      isSelectionMode = false;
      clickTrackEnabled = false;
-     showLoginDoneModal = false;
  }
 
- async function login() {
-     const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
-     showLoginModal = false;
-     showLoginDoneModal = true;
- }
-
+ // function showLogin() {
+ //     if (loginComponent) {
+ //         loginComponent.openLoginModal();
+ //     }
+ // }
+ //
 </script>
+<!-- login.svelteコンポーネントをレンダリング -->
+<Login bind:this={loginComponent} />
 
 <button id="start-button" on:click={enableSelectionMode}>
 </button>
 
 {#if isSelectionMode}
-  <button id="done-button" on:click={cancelSelectionMode}>
-    Done
-  </button>
+  <Button id="done-button" on:click={cancelSelectionMode} variant="raised">
+    <Label>Done</Label>
+  </Button>
+
+  <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined">
+    <Label>Login</Label>
+  </Button>
 {/if}
 
-<Modal bind:showModal={showLoginModal} id="signin-dialog">
-    <h2 slot="header" style="width: 300px;">
-      Singin2
-    </h2>
-
-    <button id="signin-button" on:click={login} >
-      Signin
-    </button>
-</Modal>
-
-<Modal bind:showModal={showLoginDoneModal} id="signed-dialog">
-  <h2 slot="header">
-    You are signed-in!
-  </h2>
-
-  {passkey.accessToken}
-
-</Modal>
-
 <style>
- #signin-dialog,#signed-dialog {
-   width: 300px;
- }
- #signin-button {
-   background: #a0b2f4;
-   color: white;
-   font-size: 2rem;
-   padding: 2rem 4rem;
- }
- #start-button {
+ :global(#start-button) {
    position: fixed;
    top: 50px;
    left: 0;
@@ -101,17 +79,18 @@
    cursor: pointer;
  }
 
- #done-button {
+ :global(#done-button) {
    position: fixed;
    top: 78px;
    left: 18px;
-   padding: 4px 8px;
-   border-radius: 4px;
-   overflow: hidden;
-   border: none;
-   background-color: #f4f4fe;
    z-index: 10000;
-   font-size: 1.2rem;
-   cursor: pointer;
+   border-radius: 50px;
+ }
+ :global(#login-button) {
+   position: fixed;
+   top: 130px;
+   left: 18px;
+   z-index: 10000;
+   border-radius: 50px;
  }
 </style>
