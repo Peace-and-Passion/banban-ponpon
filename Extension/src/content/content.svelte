@@ -9,23 +9,34 @@
 
 <script lang="ts">
  import Button, { Label } from '@smui/button';
+ import { originUri } from './passkey';
+ import { loginProxy } from './login-proxy';
 
  // init Svelte Material UI with 'svelte' theme
  import 'svelte-material-ui/themes/svelte.css'
 
  // load our global CSS
- import './style.css';
+ import '../style.scss';
  // import { test } from './login.svelte';
  import Login from './login.svelte';
  let loginComponent;
 
- console.log('content.svelte started');
+ console.log('content.svelte started on page: ' + window.location.origin);
 
  let multiSelectButton;
  let isSelectionMode: boolean       = false;
  let clickTrackEnabled: boolean     = false;
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
+
+
+ if (window.location.origin == originUri) {
+     if (window.location.pathname == 'login-proxy-view') {
+         loginProxy();
+     }
+ } else {
+     // other sites
+ }
 
  function enableSelectionMode() {
      if (isSelectionMode) {
@@ -39,16 +50,7 @@
      isSelectionMode = false;
      clickTrackEnabled = false;
  }
-
- // function showLogin() {
- //     if (loginComponent) {
- //         loginComponent.openLoginModal();
- //     }
- // }
- //
 </script>
-<!-- login.svelteコンポーネントをレンダリング -->
-<Login bind:this={loginComponent} />
 
 <button id="start-button" on:click={enableSelectionMode}>
 </button>
@@ -62,6 +64,8 @@
     <Label>Login</Label>
   </Button>
 {/if}
+
+<Login bind:this={loginComponent} />
 
 <style>
  @use './login.sccs';

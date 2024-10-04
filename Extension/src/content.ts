@@ -7,7 +7,7 @@
   @since 2024/10/02
  */
 
-import App from './content.svelte';
+import App from './content/content.svelte';
 
 //console.log('content.ts: start');
 

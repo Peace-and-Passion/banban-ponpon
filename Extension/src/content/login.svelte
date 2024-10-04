@@ -11,7 +11,7 @@
  import Dialog, { Title, Content, Actions } from '@smui/dialog';
  import Button, { Label } from '@smui/button';
  import { Passkey } from './passkey';
- import './style.scss';
+ import '../style.scss';
 
  let open     = false;
  const passkey = new Passkey();
