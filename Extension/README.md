@@ -1,15 +1,35 @@
 # REPLACEME
 
+## Make your Git branch from master
+
+- Run
+
+  git checkout -b master origin/master
+  git checkout -b your_name master
+  git push origin your_name
+
 ## Building and running locally
 
-Build scripts are tested on **Mac**. These will probably work on Linux and Windows Subsystem for Linux, but I have not tested them.
-
 - Make sure you have Node.js 19.7.0 or later installed
-- Open the folder containing this README
-- Run `npm install`
-- Run `npm run build`
+- cd Extension
+- Run `npm install --force`
+- Run `npm run dev`
+- Open in Chrome
 
-Continue the process with the steps listed below.
+  file:///Users/your_name/dev/banban-ext/Extension/blank.html
+
+- When you edit and save a file, Vite compiles it automatically. However, you need to reload the
+  blank.html with CMD-R (Mac) to reflect the modification.
+
+## To use components in Svelte Material UI
+
+- Import components
+
+  <script>
+    import Card from '@smui/card';
+  </script>
+
+  <Card padded>A simple padded card.</Card>
 
 ### Firefox
 
