@@ -8,54 +8,46 @@
 -->
 
 <script lang="ts">
- export const test = 'abc';
+ import Dialog, { Title, Content, Actions } from '@smui/dialog';
  import Button, { Label } from '@smui/button';
-
  import { Passkey } from './passkey';
- import Modal from './resources/Modal.svelte';
+ import './style.scss';
 
- let showLoginModal     = false;
+ let open     = false;
  const passkey = new Passkey();
 
  export function openLoginModal() {
-     showLoginModal = true;
+     open = true;
  }
 
  async function login() {
      const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
-     showLoginModal = false;
+     open = false;
  }
 
 </script>
 
-<Modal bind:showModal={showLoginModal} id="signin-dialog">
-  <h2 slot="header" style="width: 300px;">
-    Singin
-  </h2>
-
-  <Button id="signin-button" on:click={login} variant="raised">
-    Signin
-  </Button>
-</Modal>
-
-<Modal id="signed-dialog">
-  <h2 slot="header">
-    You are signed-in!
-  </h2>
-
-  {passkey.accessToken}
-
-</Modal>
+<Dialog
+    bind:open
+    aria-labelledby="simple-title"
+    aria-describedby="simple-content"
+>
+  <Title id="simple-title">Sign in</Title>
+  <Content id="simple-content">
+    <div class="center">
+      <div class="large-vspace"></div>
+      <Button id="signin-button" on:click={login} variant="raised" class="button-shaped-round">
+        Sign in
+      </Button>
+    </div>
+  </Content>
+</Dialog>
 
 <style>
- :global(#signin-dialog),:global(#signed-dialog) {
-   width: 300px;
- }
  :global(#signin-button) {
    background: #6AD8F0;
    color: white;
    font-size: 1rem;
-   padding: 1em 28px;
-   border-radius: 50px;
+   padding: 1.6em 28px;
  }
 </style>

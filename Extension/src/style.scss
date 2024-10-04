@@ -1,0 +1,29 @@
+/*
+ Common style file for banban-ext
+
+  @author Hirano Satoshi
+  @copyright 2024 Peace and Passion
+  @since 2024/10/02
+
+ */
+@use '@material/button/mixins' as mdc-button;
+
+.button-shaped-round {
+  @include mdc-button.shape-radius(100%);
+}
+
+.small-vspace {
+  height: 1em !important;
+}
+
+.vspace {
+  height: 1.6em !important;
+}
+
+.large-vspace {
+  height: 3em !important;
+}
+
+.center {
+    text-align: center;
+}

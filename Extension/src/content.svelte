@@ -54,16 +54,17 @@
 </button>
 
 {#if isSelectionMode}
-  <Button id="done-button" on:click={cancelSelectionMode} variant="raised">
+  <Button id="done-button" on:click={cancelSelectionMode} variant="raised" class="button-shaped-round">
     <Label>Done</Label>
   </Button>
 
-  <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined">
+  <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="button-shaped-round">
     <Label>Login</Label>
   </Button>
 {/if}
 
 <style>
+ @use './login.sccs';
  :global(#start-button) {
    position: fixed;
    top: 50px;
@@ -84,13 +85,12 @@
    top: 78px;
    left: 18px;
    z-index: 10000;
-   border-radius: 50px;
+   /* border-radius: 50px; */
  }
  :global(#login-button) {
    position: fixed;
    top: 130px;
    left: 18px;
    z-index: 10000;
-   border-radius: 50px;
  }
 </style>
