@@ -15,10 +15,12 @@ onMessage('getAccessTokenFromBackground', async () => {
     for (const tab of tabs) {
         const promise = (async () => {
             try {
-                const response = await sendMessage('getAccessTokenFromContextScript', {}, `tab:${tab.id}`);
+                console.log('getAccessTokenFromBackground: sending getAccessTokenFromContextScript to ' + tab.id)
+                const response = await sendMessage('getAccessTokenFromContextScript', {}, 'content-script@' + tab.id);
+                console.log(`getAccessTokenFromBackground: got AT from tab ${tab.id}`);
                 return response;
             } catch (error) {
-                console.error(`Failed to get AT from tab ${tab.id}:`, error);
+                console.error(`getAccessTokenFromBackground: Failed to get AT from tab ${tab.id}:`, error);
                 return null;
             }
         })();
@@ -27,6 +29,7 @@ onMessage('getAccessTokenFromBackground', async () => {
     }
 
     const responses = await Promise.all(promises);
+    console.log('getAccessTokenFromBackground: Promise.all end');
     const accessToken = responses.find(token => token !== null);
 
     return accessToken;

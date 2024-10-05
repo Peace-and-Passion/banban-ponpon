@@ -41,6 +41,7 @@
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
+ let accessToken: string;
 
  // functions for the main button
  function enableSelectionMode() {
@@ -57,8 +58,13 @@
  }
 
  async function getAccessToken() {
-     return loginComponent.getAccessToken();
+     accessToken = await loginComponent.getAccessToken();
  }
+
+ // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
+ export let neverLoad = false;
+
+ if (neverLoad) import('../background');
 </script>
 
 <button id="start-button" on:click={enableSelectionMode}>
@@ -69,9 +75,13 @@
     <Label>Done</Label>
   </Button>
 
-  <Button id="login-button" on:click={loginComponent.getAccessToken} variant="outlined" class="button-shaped-round">
-    <Label>Get AT</Label>
+  <Button id="login-button" on:click={getAccessToken} variant="outlined" class="button-shaped-round">
+    <Label>Get Access Token</Label>
   </Button>
+
+  <div>
+    accessToken = {accessToken}
+  </div>
   <!-- <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="button-shaped-round">
        <Label>Login</Label>
        </Button> -->

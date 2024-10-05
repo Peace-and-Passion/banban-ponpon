@@ -47,3 +47,12 @@
 - Open Firefox's [debugging page](about:debugging#/runtime/this-firefox) (`about:debugging#/runtime/this-firefox`)
 - Click "Load Temporary Add-on..."
 - Navigate to this project's root and select `manifest.json`
+
+### background.ts
+
+- content.svelt imports backgrou.ts though we don't use it, because 'input background.ts' does
+  not work in vite.config.js. this is maybe @crxjs/vite-plugin depends on "vite": "^2.9.5" but
+  our vite is 4.5 and we need 'npm install --force'.
+
+ export let neverLoad = false;
+ if (neverLoad) import('../background');
