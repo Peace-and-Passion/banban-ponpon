@@ -130,13 +130,14 @@ export class Passkey {
                 // set AT and userID if no error
                 if (event.data?.msg === 'login end') {
                     // this.verifyServerResponseBody(event.data);
-                    console.log('authenticateInAnotherTab: OK');
+                    console.log('authenticateInAnotherTab: ' + event.data?.value);
+                    this.accessToken = event.data?.value;
+                    resolve(event.data?.value);
                 }
 
                 // close the dialog XXX
-                this.openProxyDialogPromise?.then((openDialogResult) => { openDialogResult.controller.cancel(); });
+                // this.openProxyDialogPromise?.then((openDialogResult) => { openDialogResult.controller.cancel(); });
 
-                resolve();
             };
 
 

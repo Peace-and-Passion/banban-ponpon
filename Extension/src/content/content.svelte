@@ -9,6 +9,7 @@
 
 <script lang="ts">
  import Button, { Label } from '@smui/button';
+ import Snackbar, { Actions } from '@smui/snackbar';
  import * as conf from '../conf';
  import { loginProxy } from './login-proxy';
  import Login from './login.svelte';
@@ -42,6 +43,7 @@
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
  let accessToken: string;
+ let accessTokenSnackbar: Snackbar;
 
  // functions for the main button
  function enableSelectionMode() {
@@ -59,6 +61,7 @@
 
  async function getAccessToken() {
      accessToken = await loginComponent.getAccessToken();
+     accessTokenSnackbar.open();
  }
 
  // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
@@ -79,13 +82,14 @@
     <Label>Get Access Token</Label>
   </Button>
 
-  <div>
-    accessToken = {accessToken}
-  </div>
   <!-- <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="button-shaped-round">
        <Label>Login</Label>
        </Button> -->
 {/if}
+
+<Snackbar bind:this={accessTokenSnackbar}>
+  <Label>{accessToken}</Label>
+</Snackbar>
 
 <Login bind:this={loginComponent} />
 

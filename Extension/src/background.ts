@@ -8,7 +8,9 @@ console.log('background script running...');
 /**
     Gets an access token from any of running Requestland in tabs.
   */
-onMessage('getAccessTokenFromBackground', async () => {
+onMessage('getAccessTokenFromBackground', getAccessTokenFromTab);
+
+export async function getAccessTokenFromTab() {
     const tabs = await browser.tabs.query({ url: conf.originUri + '/*' });
     const promises = [];
 
@@ -33,7 +35,7 @@ onMessage('getAccessTokenFromBackground', async () => {
     const accessToken = responses.find(token => token !== null);
 
     return accessToken;
-});
+}
 
 // browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //   console.log('got message', message);
