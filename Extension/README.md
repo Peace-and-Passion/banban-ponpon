@@ -21,6 +21,17 @@
 - When you edit and save a file, Vite compiles it automatically. However, you need to reload the
   blank.html with CMD-R (Mac) to reflect the modification.
 
+
+## Constants
+
+- Import conf.ts
+
+  import * as conf from '../conf';
+
+- Use constants
+
+  fetch(conf.apiURL + '/v1/my_api')
+
 ## To use components in Svelte Material UI
 
 - Import components

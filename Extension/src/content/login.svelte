@@ -1,6 +1,6 @@
 <!--
 
-     Browser extension template for Banban board
+     Banban Ponpon: Browser extension for Banban board
 
      @author Hirano Satoshi
      @copyright 2024 Peace and Passion
@@ -9,6 +9,7 @@
 
 <script lang="ts">
  import Dialog, { Title, Content, Actions } from '@smui/dialog';
+ import * as conf from '../conf';
  import Button, { Label } from '@smui/button';
  import { Passkey } from './passkey';
  import '../style.scss';
@@ -18,6 +19,9 @@
 
  export function openLoginModal() {
      open = true;
+ }
+ export async function getAccessToken() {
+     browser.cookies.Cookie.get('');
  }
 
  async function login() {

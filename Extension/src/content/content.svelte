@@ -1,43 +1,48 @@
 <!--
 
-     Browser extension template for Banban board
+     Banban Ponpon: Browser extension for Banban board
 
-     @author Hirano Satoshi
+     @author Hirano Satoshi, Togashi Ayuto
      @copyright 2024 Peace and Passion
      @since 2024/10/02
 -->
 
 <script lang="ts">
  import Button, { Label } from '@smui/button';
- import { originUri } from './passkey';
+ import * as conf from '../conf';
  import { loginProxy } from './login-proxy';
-
- // init Svelte Material UI with 'svelte' theme
- import 'svelte-material-ui/themes/svelte.css'
-
- // load our global CSS
- import '../style.scss';
- // import { test } from './login.svelte';
  import Login from './login.svelte';
- let loginComponent;
+ import 'svelte-material-ui/themes/svelte.css' // init Svelte Material UI with 'svelte' theme
+ import '../style.scss';                       // load our global CSS
 
  console.log('content.svelte started on page: ' + window.location.origin);
+
+ //
+ // purpose dispatcher
+ //
+ if (window.location.origin == conf.originUri) {
+     if (window.location.pathname == 'login-proxy-view') {
+         loginProxy();
+     }
+ } else {
+     // other sites
+
+     //XXX catch a message here from the background script for parsing DOM
+     // otherwise, act as the master script.
+ }
+
+ //
+ // script for the selection mode button
+ //
 
  let multiSelectButton;
  let isSelectionMode: boolean       = false;
  let clickTrackEnabled: boolean     = false;
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
+ let loginComponent;                              // Login component bound by <Login>
 
-
- if (window.location.origin == originUri) {
-     if (window.location.pathname == 'login-proxy-view') {
-         loginProxy();
-     }
- } else {
-     // other sites
- }
-
+ // functions for the main button
  function enableSelectionMode() {
      if (isSelectionMode) {
          cancelSelectionMode();
@@ -49,6 +54,10 @@
  function cancelSelectionMode() {
      isSelectionMode = false;
      clickTrackEnabled = false;
+ }
+
+ async function getAccessToken() {
+     return loginComponent.getAccessToken();
  }
 </script>
 

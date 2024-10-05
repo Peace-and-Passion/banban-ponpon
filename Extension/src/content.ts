@@ -1,8 +1,8 @@
 /**
 
-  Browser extension loader for Banban board
+  Banban Ponpon: Browser extension for Banban board
 
-  @author Hirano Satoshi
+  @author Hirano Satoshi, Togashi Ayuto
   @copyright 2024 Peace and Passion
   @since 2024/10/02
  */

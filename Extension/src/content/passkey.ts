@@ -1,30 +1,12 @@
 /**
-  WebAuthn with Passkeys Authenticator
+  Passkeys Authenticator for Banban Ponpon
 
   @author Hirano Satoshi
+  @copyright 2024 Peace and Passion
   @since 2024/3/15
  */
 import browser from 'webextension-polyfill';
-export const D_ADDRESS_SEPARATOR = '//';
-export const PasskeyCheckLoginTimeout = 62 * 1000;  // Login rentrance timeout: 62 sec
-export const HTTP_FORBIDDEN = 403;         // Passkey server returns HTTP_FORBIDDEN
-export const is_local = true;
-export const webExtID =  'chrome-extension://' + browser.runtime.id;
-//console.log(webExtID);
-
-declare const PRODUCTION: boolean;         // defined in vite.config.js
-declare const BUILD_HOST: string;          // defined in vite.config.js
-export let originUri = "https://request.land";
-if (!PRODUCTION) {
-    if (BUILD_HOST.startsWith('ppa-')) {
-        originUri = 'https://' + BUILD_HOST + '.peace-and-passion.com' + ':50000';
-    } else {
-        originUri = "https://localhost:50000";
-    }
-}
-export const apiURL = originUri;
-export class NetworkError extends Error {}
-
+import * as conf from '../conf';
 declare class _VerifyAuthenticationResponse {
   public at: string;
   public atExp: number;
@@ -131,7 +113,7 @@ export class Passkey {
 
         return new Promise<void>((resolve, _reject) => {
             const handleMessage = async (event: MessageEvent) => {
-                if (event.origin !== originUri || event.data?.openerID !== this.openerID_send) {
+                if (event.origin !== conf.originUri || event.data?.openerID !== this.openerID_send) {
                     return;
                 }
 
@@ -167,13 +149,13 @@ export class Passkey {
                 params = new URLSearchParams({
                     mode: 'create-passkey',
                     openerID: this.openerID_send,
-                    extensionID: webExtID,
+                    extensionID: conf.webExtID,
                 });
-                newTab = window.open(originUri + '/create-passkey-view?' + params.toString(), "_blank");
+                newTab = window.open(conf.originUri + '/create-passkey-view?' + params.toString(), "_blank");
             } else {
-                params = new URLSearchParams({ extensionID: webExtID });
+                params = new URLSearchParams({ extensionID: conf.webExtID });
                 if (land_id) params.set('land_id', land_id);
-                newTab = window.open(originUri + '/app-login/' + this.openerID_send + '?' + params.toString(), "_blank");
+                newTab = window.open(conf.originUri + '/app-login/' + this.openerID_send + '?' + params.toString(), "_blank");
             }
 
             if (!newTab) {
@@ -197,7 +179,7 @@ export class Passkey {
     cancelProcessInAnotherTab() {
         if (this.tabInProgress) {
             // send to this context to close the tab
-            window.postMessage({openerID: this.openerID_send, 'error': 'Passkey canceled'}, originUri);
+            window.postMessage({openerID: this.openerID_send, 'error': 'Passkey canceled'}, conf.originUri);
         }
     }
 
@@ -212,7 +194,7 @@ export class Passkey {
      */
     public async checkLogin(): Promise<void> {
         const sleep = (msec: number): Promise<void> => { return new Promise(resolve => setTimeout((resolve), msec)); }
-        const timeout = Date.now() + PasskeyCheckLoginTimeout;
+        const timeout = Date.now() + conf.PasskeyCheckLoginTimeout;
         let showMsg = 0;      // show waiting... log msg only once
 
         try {
@@ -290,7 +272,7 @@ export class Passkey {
         } catch (err) {
             this.checkLoginInProgress = err as Error;
 
-            if (err instanceof NetworkError && await navigator?.serviceWorker?.getRegistration('/')) {
+            if (err instanceof conf.NetworkError && await navigator?.serviceWorker?.getRegistration('/')) {
                 // network error and serviceworker exists -> AccessToken for offline mode
                 console.log('checkLogin: ignore NetworkError. Maybe offline');
                 this.checkLoginInProgress = false;
@@ -314,7 +296,7 @@ export class Passkey {
     public async refreshAccessToken(): Promise<void> {
         if (!this.userID || await this.hasValidAccessToken() || !this.hasValidRefreshToken()) return;
 
-        const resp: Response = await fetch(apiURL + '/login/refresh-token', {
+        const resp: Response = await fetch(conf.apiURL + '/login/refresh-token', {
             body: JSON.stringify({
                 userID: this.userID
             }),
@@ -350,7 +332,7 @@ export class Passkey {
 
         // ask the server to switch user
         try {
-            const verificationResp: Response = await fetch(apiURL + '/login/switch-user', {
+            const verificationResp: Response = await fetch(conf.apiURL + '/login/switch-user', {
                 body: JSON.stringify({
                     land_id: land_id,
                 }),
@@ -375,7 +357,7 @@ export class Passkey {
                 this.saveAccessToken(verificationResponse);
                 this.toast(this.tr('user.Switched to', {landid: land_id}));
             } else { // error, try Passkey sign in
-                if (verificationResp.status == HTTP_FORBIDDEN) {
+                if (verificationResp.status == conf.HTTP_FORBIDDEN) {
                     // signin may raise an error
                     await this.authenticate({land_id_or_userID: land_id});
                     this.toast(this.tr('user.Switched to', {landid: land_id}));
@@ -385,12 +367,12 @@ export class Passkey {
                     const msg: string = await verificationResp.text();
                     console.log('switchUserAccount: ' + msg);
                     this.toast(this.tr(msg));
-                    throw new NetworkError(msg);
+                    throw new conf.NetworkError(msg);
                 }
             }
         } catch(_err: any) {
             const err: Error = _err;
-            if (err instanceof NetworkError && await navigator?.serviceWorker?.getRegistration('/')) {
+            if (err instanceof conf.NetworkError && await navigator?.serviceWorker?.getRegistration('/')) {
                 //? what can we do?
             }
             if (err.message === 'Passkey canceled') return;
@@ -419,11 +401,11 @@ export class Passkey {
     async logout(): Promise<void> {
         this.clearLoginState();
 
-        if (!all && !this.userID) return;
+        if (!this.userID) return;
 
-        const resp: Response = await fetch(apiURL + '/login/passkey-logout', {
+        const resp: Response = await fetch(conf.apiURL + '/login/passkey-logout', {
             body: JSON.stringify({
-                userID: all ? 'all' : this.userID
+                userID: this.userID
             }),
             headers: {
                 'Content-Type': 'application/json',
