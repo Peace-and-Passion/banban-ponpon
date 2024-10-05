@@ -69,9 +69,12 @@
     <Label>Done</Label>
   </Button>
 
-  <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="button-shaped-round">
-    <Label>Login</Label>
+  <Button id="login-button" on:click={loginComponent.getAccessToken} variant="outlined" class="button-shaped-round">
+    <Label>Get AT</Label>
   </Button>
+  <!-- <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="button-shaped-round">
+       <Label>Login</Label>
+       </Button> -->
 {/if}
 
 <Login bind:this={loginComponent} />

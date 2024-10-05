@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => {
                 input: {
                     content: './src/content.ts',
                     background: './src/background.ts',
-                    popup: './src/popup/popup.ts',
-                    settings: './src/settings/settings.ts'
+                    // popup: './src/popup/popup.ts',
+                    // settings: './src/settings/settings.ts'
                 },
                 output: {
                     entryFileNames: '[name].js', // 出力ファイル名を指定

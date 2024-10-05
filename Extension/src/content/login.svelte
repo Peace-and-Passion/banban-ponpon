@@ -8,9 +8,11 @@
 -->
 
 <script lang="ts">
+ import browser from 'webextension-polyfill';
  import Dialog, { Title, Content, Actions } from '@smui/dialog';
  import * as conf from '../conf';
  import Button, { Label } from '@smui/button';
+ import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import { Passkey } from './passkey';
  import '../style.scss';
 
@@ -20,15 +22,42 @@
  export function openLoginModal() {
      open = true;
  }
- export async function getAccessToken() {
-     browser.cookies.Cookie.get('');
+
+ /**
+    Gets an access token from any of running Requestland in tabs, or open Login dialog.
+  */
+ export async function getAccessToken(): string {
+     const accessToken: string = await sendMessage('getAccessTokenFromBackground', {}, 'background');
+     if (accessToken) {
+         console.log('Access Token found:', accessToken);
+         return accessToken;
+     } else {
+         console.log('No tabs responded. Triggering login dialog.');
+         return login();
+     }
  }
 
- async function login() {
+ //
+ //      function openLoginDialog() {
+ //          browser.tabs.create({
+     //              url: 'https://request.land/passkey-proxy',
+     //              active: true
+     //          });
+     //      }
+     //browser.cookies.Cookie.get('');
+
+ async function login(): string {
      const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
      open = false;
+     return accessToken;
  }
 
+
+ // Receive getAt and return AT.
+ onMessage('getAccessTokenFromContextScript', async () => {
+     const accessToken = 'abc'; // await getAccessTokenFromSomewhere(); // 実際のアクセストークン取得処理
+     return { value: accessToken };
+ });
 </script>
 
 <Dialog
