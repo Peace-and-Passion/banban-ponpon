@@ -30,6 +30,13 @@
 
 - Also you may need to restart Chrome when something wrong.
 
+
+## Types
+
+- Define types used for communication between the content script and the background script in src/shim.d.ts.
+
+  See https://serversideup.net/open-source/webext-bridge/docs/guide/type-safe-protocols
+
 ## Constants
 
 - Import conf.ts
