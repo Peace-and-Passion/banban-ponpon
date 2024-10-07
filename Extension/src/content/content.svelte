@@ -12,7 +12,7 @@
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import Button, { Label } from '@smui/button';
  import type { ParsePageResult } from '../types_dummy';
- // import { parseResponse } from './page_parser/parser/response-parser';
+//import { parseResponse } from './page_parser/parser/response-parser';
  //import { ParsePageResult } from './page_parser/types';
  import Kitchen from '@smui/snackbar/kitchen';
  import * as conf from '../conf';
@@ -50,7 +50,7 @@
 //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
      const parsePageResult: ParsePageResult = { title: "hello" };       // YYY replace with page_parser
-     //const parsePageResult: ParsePageResult = await parseResponse();
+     // const parsePageResult: ParsePageResult = await parseResponse();
      window.close();
      return parsePageResult;
  });
@@ -109,13 +109,14 @@
          console.log('getAccessToken: end');
 
          console.log('sendParsePageResult: start');
-	 const response = await fetch(conf.apiURL + "/v1/putCardExt", {
+	 //const response = await fetch(conf.apiURL + "/v1/putCardExt", {
+	 const response = await fetch("https://request.land" + "/v1/putCardExt", {
 	     method : "POST",
 	     headers : {'Content-type' : 'application/x-www-form-urlencoded'},
              body: new URLSearchParams({
-                 token: accessToken || '',
+                 token: 'tiaiUk-48SGkyfQrogYf2pmJQ3GdfPyd0ciWiuYBYnQCI3TYrT' || accessToken || '',
                  parse_page_results: JSON.stringify([parsePageResult]),
-                 url: JSON.stringify(url)
+                 //url: JSON.stringify(url)
              }).toString()
 	     // body : JSON.stringify({
              //     token: accessToken,
