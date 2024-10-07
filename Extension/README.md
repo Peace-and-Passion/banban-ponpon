@@ -16,7 +16,7 @@
 - Run `npm run dev`
 - Open in Chrome
 
-  file:///Users/your_name/dev/banban-ext/Extension/blank.html
+  file:///Users/your_name/dev/banban-ponpon/Extension/blank.html
 
 - When you edit and save a file, Vite compiles it automatically. However, you need to reload the
   blank.html with CMD-R (Mac) to reflect the modification.
@@ -32,7 +32,13 @@
 
   fetch(conf.apiURL + '/v1/my_api')
 
-## To use components in Svelte Material UI
+## Dummy types for page_parser
+
+- Replace this with page_parser/types.ts when it is available.
+
+  types_dummy.ts
+
+## To use components in [Svelte Material UI](https://sveltematerialui.com/)
 
 - Import components
 

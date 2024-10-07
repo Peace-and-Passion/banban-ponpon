@@ -100,8 +100,8 @@
   <Title id="simple-title">Sign in</Title>
   <Content id="simple-content">
     <div class="center">
-      <div class="large-vspace"></div>
-      <Button id="signin-button" on:click={login} variant="raised" class="button-shaped-round">
+      <div class="ponpon-large-vspace"></div>
+      <Button id="ponpon-signin-button" on:click={login} variant="raised" class="ponpon-button-shaped-round">
         Sign in
       </Button>
     </div>
@@ -109,7 +109,7 @@
 </Dialog>
 
 <style>
- :global(#signin-button) {
+ :global(#ponpon-signin-button) {
    background: #6AD8F0;
    color: white;
    font-size: 1rem;

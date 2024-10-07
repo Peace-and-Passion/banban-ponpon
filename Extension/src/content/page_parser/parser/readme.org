@@ -1,0 +1,77 @@
+- ファイルの構造
+  - データ構造はtypes.ts
+    - ParsePageResultの中身を埋めれば良い。
+
+  - 呼び出し元はresponse-parser.ts
+    - ただしAmazonは特別扱いしていて、amazon.tsを使用
+
+  - その他ファイル
+    - structured-data-parser.jsが実際にhtmlからboardのデータを取得するところ
+    - ld-parser.tsが、ldjsonのobjectをパースするところ
+    - utils.tsは細かな処理をまとめてある
+
+- インターフェース
+  - POST putCard
+    - parse_page_results: JSON string e.g. [{\"title\":\"titleA\",\"description\":\"descA\", \"url\": \"https://example.com\", \"imageURLs\" : [\"https://cdn.request.land/img/banban-prices-ja-comp.svg\"]}]
+  - curl -X POST https://ppa-aikawa.peace-and-passion.com:50010/v1/putCard      -d "parse_page_results=[{\"title\":\"titleA\",\"description\":\"descA\", \"url\": \"https://example.com\", \"imageURLs\" : [\"https://cdn.request.land/img/banban-prices-ja-comp.svg\"]}]"
+  - postのbodyのparse_page_resultsにJSON.stringify([parsePageResult1, parsePageResult2, ...])のようにする。一つだけ送る場合も配列に1つだけ入れる。
+
+
+
+
+
+- hm-server側の実装
+    @hdb.transaction
+    def on_post(self, request: falcon.Request, response: falcon.Response) -> None:
+        # if not conf.is_local:
+        #     return
+        url_json: str|None = request.get_param('url') # json.stringify() '["https://example.com","https://example2.com"]'
+        parse_page_results_json: str = request.get_param('parse_page_results') or ""
+        if (not url_json) and (not parse_page_results_json):
+            return
+
+        # get a latest cardboard
+        if cardboards:
+            cardboard: Cardboard = cardboards[0]
+
+            if url_json:
+                urls = json.loads(url_json)
+
+                for url in urls:
+                    card: Card = Card()
+                    # card.title = title
+                    # if imageURL:
+                    #     card.file = t_hf.HFFile(fileType = t_hf.FileType.Img,
+                    #                             url = imageURL)
+                    #     card.files = [card.file]
+                    card.url = url;
+                    card.index = random.randint(1, 100000)
+                    card.rank = cardboard.lines[0].rank if len(cardboard.lines) > 0 else 0
+                    # card.description = description
+                    session_svc.banban_fetch_for_card(card)
+                    cards.append(card)
+
+            if parse_page_results_json:
+                parse_page_results_dict: list[dict[str, Any]] = json.loads(parse_page_results_json)
+                parsePageResults: list[_ParsePageResult] = session_svc.parsePageResult_for_data(parse_page_results_dict)
+                for parsePageResult in parsePageResults:
+                    card: Card = Card()
+                    card.title = parsePageResult.title
+                    card.description = parsePageResult.description
+                    card.shopPrices = parsePageResult.shopPrices
+                    if parsePageResult.imageURLs:
+                        card.subFiles = [HFFile(fileType = FileType.Img, url = url) for url in parsePageResult.imageURLs]
+                        card.file = card.subFiles[0]
+                    card.url = parsePageResult.url;
+                    card.index = random.randint(1, 100000)
+                    card.rank = cardboard.lines[0].rank if len(cardboard.lines) > 0 else 0
+
+                    cards.append(card)
+            # put
+            if cards:
+                session_svc.local_putCard(cards, cardboard.eID, None, force_oID=cardboard.oID)
+
+
+- test
+  - e2e-testはplaywrightを使用
+  - unit-testはjestを使用。(今回はe2eテストのみでで十分かもしれません)
