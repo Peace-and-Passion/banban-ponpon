@@ -61,6 +61,9 @@
 
      const clickedURL: string = event.target.closest('a')?.href;
      if (clickedURL) {
+
+	 showHaloEffect(event) //Halo effect
+	 
          //linkSnackbar.open(clickedURL);
          const parsePageResult: ParsePageResult = await sendMessage('openTab', { url: clickedURL }, 'background');
          //chrome.runtime.sendMessage({ type: 'openTab', url: clickedURL });
@@ -70,6 +73,86 @@
      }
  }
 
+ 
+ // Save Button Position to LocalStorage
+ function saveButtonPosition(position) {
+     localStorage.setItem('toggleButtonPosition', JSON.stringify(position));
+ }
+
+ // Get Button Position from LocalStorage
+ function getSavedButtonPosition() {
+     const position = localStorage.getItem('toggleButtonPosition');
+     return position ? JSON.parse(position) : { top: 50 };
+ }
+
+ // Restore Button Position
+ function restoreButtonPosition() {
+     const savedPosition = getSavedButtonPosition();
+     const toggleButton = document.getElementById('ponpon-start-button');
+     if (toggleButton) {
+        toggleButton.style.top = `${savedPosition.top}px`;
+     }
+     adjustButtonPositions(savedPosition.top);
+ }
+
+ // Adjust Sub Buttons Position
+ function adjustButtonPositions(topPosition) {
+     const cancelButton = document.getElementById('ponpon-done-button');
+     const loginButton = document.getElementById('ponpon-login-button');
+     if (!cancelButton || !loginButton) {
+	 return;
+     }
+     const pageHeight = window.innerHeight;
+     const isUpperHalf = topPosition < pageHeight / 2;
+
+     if (isUpperHalf) {
+         cancelButton.style.top = `${topPosition + 28}px`;
+         loginButton.style.top = `${topPosition + 80}px`;
+     } else {
+         cancelButton.style.top = `${topPosition - 50}px`;
+         loginButton.style.top = `${topPosition - 2}px`;
+     }
+ }
+
+ // Draggable Button Position
+ function makeButtonDraggable(button) {
+     let isDragging = false;
+     let offsetY;
+
+     button.addEventListener('mousedown', (e) => {
+         isDragging = true;
+         offsetY = e.clientY - button.getBoundingClientRect().top;
+         document.addEventListener('mousemove', onMouseMove);
+         document.addEventListener('mouseup', onMouseUp);
+     });
+
+     function onMouseMove(e) {
+         if (isDragging) {
+             button.style.top = `${e.clientY - offsetY}px`;
+             adjustButtonPositions(button.getBoundingClientRect().top);
+         }
+     }
+
+     function onMouseUp() {
+         isDragging = false;
+         document.removeEventListener('mousemove', onMouseMove);
+         document.removeEventListener('mouseup', onMouseUp);
+
+         saveButtonPosition({
+             top: button.getBoundingClientRect().top,
+         });
+     }
+ }
+
+ window.addEventListener('DOMContentLoaded', () => {
+    const toggleButton = document.getElementById('ponpon-start-button');
+    if (toggleButton) {
+        makeButtonDraggable(toggleButton);
+	console.log('toggleButton found, draggable initialized');
+    }
+     restoreButtonPosition();
+ });
+ 
  // Toggles selection mode
  function toggleSelectionMode() {
      if (isSelectionMode) {
@@ -77,6 +160,9 @@
      } else {
          isSelectionMode = true;
 
+	 const toggleButton = document.getElementById('ponpon-start-button');
+         adjustButtonPositions(toggleButton.getBoundingClientRect().top);
+	 
          document.addEventListener('click', linkClickHandler);
      }
  }
@@ -87,6 +173,21 @@
      document.removeEventListener('click', linkClickHandler);
  }
 
+
+ //Halo Effect Define
+ function showHaloEffect(event: MouseEvent) {
+     const halo = document.createElement('div');
+     halo.classList.add('halo-effect');
+  
+     document.body.appendChild(halo);
+     halo.style.left = `${event.pageX - 5}px`;
+     halo.style.top = `${event.pageY - 5}px`;
+
+     halo.addEventListener('animationend', () => {
+	 halo.remove();
+     });
+ }
+ 
  async function sendParsePageResult(parsePageResult: ParsePageResult, url: string) {
      try {
          console.log('getAccessToken: start');
@@ -177,7 +278,7 @@
   </Button>
 
   <Button id="ponpon-login-button" on:click={getAccessToken} variant="outlined" class="ponpon-button-shaped-round">
-    <Label>Get Access Token</Label>
+      <Label>Get Access Token</Label>
   </Button>
 
   <!-- <Button id="ponpon-login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="ponpon-button-shaped-round">
@@ -192,31 +293,52 @@
 <style>
  @use './login.sccs';
  :global(#ponpon-start-button) {
-   position: fixed;
-   top: 50px;
-   left: 0;
-   width: 20px;
-   height: 30px;
-   border-radius: 0 50px 50px 0;
-   overflow: hidden;
-   padding: 0;
-   border: none;
-   background-color: red;
-   z-index: 10000;
-   cursor: pointer;
+     position: fixed;
+     top: 50px;
+     left: 0;
+     width: 20px;
+     height: 30px;
+     border-radius: 0 50px 50px 0;
+     overflow: hidden;
+     padding: 0;
+     border: none;
+     background-color: red;
+     z-index: 10000;
+     cursor: pointer;
  }
 
  :global(#ponpon-done-button) {
-   position: fixed;
-   top: 78px;
-   left: 18px;
-   z-index: 10000;
-   /* border-radius: 50px; */
+     position: fixed;
+     top: 78px;
+     left: 18px;
+     z-index: 10000;
+     /* border-radius: 50px; */
  }
  :global(#ponpon-login-button) {
-   position: fixed;
-   top: 130px;
-   left: 18px;
-   z-index: 10000;
+     position: fixed;
+     top: 130px;
+     left: 18px;
+     z-index: 10000;
+ }
+ :global(.halo-effect) {
+     position: absolute;
+     border-radius: 50%;
+     background: rgba(255, 0, 5, 0.5);
+     width: 10px;
+     height: 10px;
+     animation: halo-animation 0.6s ease-out forwards;
+     pointer-events: none;
+     z-index: 9999;
+ }
+
+ @keyframes halo-animation {
+     0% {
+	 transform: scale(0);
+	 opacity: 1;
+     }
+     100% {
+	 transform: scale(15);
+	 opacity: 0;
+     }
  }
 </style>
