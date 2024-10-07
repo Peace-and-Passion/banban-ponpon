@@ -3,7 +3,7 @@ import { ParsePageResult } from './types';
 
 declare module "webext-bridge" {
     export interface ProtocolMap {
-        openTab: ProtocolWithReturn<{ url: string }, { parsePageResult: ParsePageResult }>;
-        parse: ProtocolWithReturn<{ }, { parsePageResult: ParsePageResult }>;
+        openTab: ProtocolWithReturn<{ url: string }, ParsePageResult>;
+        parse: ProtocolWithReturn<{ }, ParsePageResult>;
     }
 }

@@ -32,7 +32,7 @@
 
   fetch(conf.apiURL + '/v1/my_api')
 
-## To use components in Svelte Material UI
+## To use components in [Svelte Material UI](https://sveltematerialui.com/)
 
 - Import components
 

@@ -12,9 +12,9 @@
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import Button, { Label } from '@smui/button';
  // import { parseResponse } from './page_parser/parser/response-parser';
-// import type { ParsePageResult } from '../types';
+ // import type { ParsePageResult } from '../types';
  //import { ParsePageResult } from './page_parser/types';
- import Snackbar, { Actions } from '@smui/snackbar';
+ import Kitchen from '@smui/snackbar/kitchen';
  import * as conf from '../conf';
  import { loginProxy } from './login-proxy';
  import Login from './login.svelte';
@@ -55,22 +55,22 @@ export interface ParsePageResult {
      const parsePageResult: ParsePageResult = { title: "hello" };
      //const parsePageResult: ParsePageResult = await parseResponse();
      window.close();
-     return { parsePageResult: parsePageResult };
+     return parsePageResult;
  });
 
-     //
-     // script for the selection mode button
-     //
+ //
+ // script for the selection mode button
+ //
 
-     let multiSelectButton;
+ let kitchen: Kitchen;                            // Pushable Snackbar
+ let multiSelectButton;
  let isSelectionMode: boolean       = false;
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
- let accessToken: string;
- let clickedURL: string;
+ // let accessToken: string;
  let accessTokenSnackbar: Snackbar;
- let linkSnackbar: Snackbar;
+ //let linkSnackbar: Snackbar;
 
  const linkClickHandler = async (event: ClickEvent) => {
      if (!isSelectionMode) return;
@@ -78,13 +78,13 @@ export interface ParsePageResult {
      event.preventDefault();
      event.stopPropagation();
 
-     clickedURL = event.target.closest('a')?.href;
+     const clickedURL: string = event.target.closest('a')?.href;
      if (clickedURL) {
-         linkSnackbar.open(clickedURL);
+         //linkSnackbar.open(clickedURL);
          const parsePageResult: ParsePageResult = await sendMessage('openTab', { url: clickedURL }, 'background');
          //chrome.runtime.sendMessage({ type: 'openTab', url: clickedURL });
 
-         await sendParsePageResult(parsePageResult);
+         await sendParsePageResult(parsePageResult, clickedURL);
          console.log('linkClickHandler: end');
      }
  }
@@ -107,33 +107,64 @@ export interface ParsePageResult {
  }
 
  async function getAccessToken() {
-     console.log('getAccessToken: start');
-     accessToken = await loginComponent.getAccessToken();
-     accessTokenSnackbar.open();
-     console.log('getAccessToken: end');
  }
 
- async function sendParsePageResult(parsePageResult: ParsePageResult) {
+ async function sendParsePageResult(parsePageResult: ParsePageResult, url: string) {
      try {
-         const accessToken = await getAccessToken();
+         console.log('getAccessToken: start');
+         const accessToken = await loginComponent.getAccessToken();
+         // accessTokenSnackbar.open();
+         console.log('getAccessToken: end');
 
          console.log('sendParsePageResult: start');
-	 const response = await fetch(conf.apiUrl + "/v1/putCardExt", {
+	 const response = await fetch(conf.apiURL + "/v1/putCardExt", {
 	     method : "POST",
 	     headers : {'Content-type' : 'application/x-www-form-urlencoded'},
-	     body : `token=${accessToken}, parse_page_results=[${JSON.stringify(parsePageResult)}]`
-	 });
+             body: new URLSearchParams({
+                 token: accessToken || '',
+                 parse_page_results: JSON.stringify([parsePageResult]),
+                 url: JSON.stringify(url)
+             }).toString()
+	     // body : JSON.stringify({
+             //     token: accessToken,
+             //     parse_page_results: JSON.stringify(parsePageResult),
+             //     url: JSON.stringify(url)
+             // 	     })
+         });
 	 if (response.ok) {
-             console.log('sendParsePageResult: start');
+             pushToKitchen('putCard: ' + parsePageResult.title || 'OK');
+             //console.log('sendParsePageResult: start');
          } else {
              const errorMsg = await response.text();
+             pushToKitchen('putCard: ' + errorMsg);
 	     throw new Error("Connection error for " + conf.apiUrl + ': ' + errorMsg);
 	 }
      } catch (error) {
+         pushToKitchen('putCard: ' + error.toString());
 	 console.log("sendParsePageResult: fetch() error: "+ error.toString());
      }
  }
- // toggleSelectionMode(); // for test
+
+ export function pushToKitchen(msg: string) {
+     kitchen.push({
+         props: {  variant: 'stacked',  },
+         label: msg,
+         // actions: [
+         //     {
+         //         onClick: () => (action = 'Something'),
+         //         text: 'Something',
+         //     },
+         //     {
+         //         onClick: () => (action = 'Another'),
+         //         text: 'Another',
+         //     },
+         // ],
+         dismissButton: true,
+         onDismiss: () => (action = 'Dismissed'),
+         onClose: (e) => {  reason = e.detail.reason ?? 'Undefined.';   },
+     });
+ }
+     // toggleSelectionMode(); // for test
 
  // start the content script
  dispatch();
@@ -163,14 +194,15 @@ export interface ParsePageResult {
        </Button> -->
 {/if}
 
-<Snackbar bind:this={accessTokenSnackbar} timeoutMs={4000}>
-  <Label>{accessToken}</Label>
-</Snackbar>
-
-<Snackbar bind:this={linkSnackbar} timeoutMs={4000}>
-  <Label>{clickedURL}</Label>
-</Snackbar>
-
+<Kitchen bind:this={kitchen} dismiss$class="material-icons" />
+<!-- <Snackbar bind:this={accessTokenSnackbar} timeoutMs={4000}>
+     <Label>{accessToken}</Label>
+     </Snackbar>
+-->
+<!-- <Snackbar bind:this={linkSnackbar} timeoutMs={4000}>
+     <Label>{clickedURL}</Label>
+     </Snackbar>
+-->
 <Login bind:this={loginComponent} />
 
 <style>

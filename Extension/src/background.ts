@@ -31,7 +31,7 @@ onMessage('openTab', async ({ data }) => {
     console.log(`Tab ${completedTab.id} is completed. Sending parse`);
     const result = await sendMessage('parse', {}, 'content-script@' + completedTab.id);
 
-    return { parsePageResult: result.parsePageResult };
+    return result;
 });
 
 // onMessage('openTab', async ({ data }) => {
