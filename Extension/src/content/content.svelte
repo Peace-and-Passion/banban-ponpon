@@ -109,12 +109,12 @@
          console.log('getAccessToken: end');
 
          console.log('sendParsePageResult: start');
-	 //const response = await fetch(conf.apiURL + "/v1/putCardExt", {
-	 const response = await fetch("https://request.land" + "/v1/putCardExt", {
+	 const response = await fetch(conf.apiURL + "/v1/putCardExt", {
+         // const response = await fetch("https://localhost:50000" + "/v1/putCardExt", {
 	     method : "POST",
 	     headers : {'Content-type' : 'application/x-www-form-urlencoded'},
              body: new URLSearchParams({
-                 token: 'tiaiUk-48SGkyfQrogYf2pmJQ3GdfPyd0ciWiuYBYnQCI3TYrT' || accessToken || '',
+                 token: accessToken || '',
                  parse_page_results: JSON.stringify([parsePageResult]),
                  //url: JSON.stringify(url)
              }).toString()
