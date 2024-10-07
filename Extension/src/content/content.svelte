@@ -100,7 +100,7 @@
              body: new URLSearchParams({
                  token: accessToken || '',
                  parse_page_results: JSON.stringify([parsePageResult]),
-                 url: JSON.stringify(url)
+                 // url: JSON.stringify(url)
              }).toString()
 	     // body : JSON.stringify({
              //     token: accessToken,
