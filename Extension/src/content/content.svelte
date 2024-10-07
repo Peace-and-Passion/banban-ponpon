@@ -12,6 +12,7 @@
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import Button, { Label } from '@smui/button';
  // import { parseResponse } from './page_parser/parser/response-parser';
+// import type { ParsePageResult } from '../types';
  //import { ParsePageResult } from './page_parser/types';
  import Snackbar, { Actions } from '@smui/snackbar';
  import * as conf from '../conf';
@@ -20,17 +21,19 @@
  import 'svelte-material-ui/themes/svelte.css' // init Svelte Material UI with 'svelte' theme
  import '../style.scss';                       // load our global CSS
 
- console.log('content.svelte started on page: ' + window.location.origin);
-
- interface ParsePageResult {
+export interface ParsePageResult {
      title: string;
  }
+ console.log('content.svelte started on page: ' + window.location.origin);
+
+ let isMain: boolean = true;                       // main script with the multi selectin button
 
  //
  // purpose dispatcher
  //
  async function dispatch() {
      if (window.location.origin == conf.originUri) {
+         isMain = false;
          if (window.location.pathname == 'login-proxy-view') {
              loginProxy();
              return;
@@ -41,19 +44,25 @@
  }
 
  onMessage('parse', async () => {
+     // if (window.location.origin == conf.originUri) {
+     //     cancelSelectionMode();
+     //     isMain = false;
+     //     return;
+     // }
+     //
+//     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
      const parsePageResult: ParsePageResult = { title: "hello" };
      //const parsePageResult: ParsePageResult = await parseResponse();
-     console.log('parse: end');
-
-     sendParsePageResult(parsePageResult);
+     window.close();
+     return { parsePageResult: parsePageResult };
  });
 
- //
- // script for the selection mode button
- //
+     //
+     // script for the selection mode button
+     //
 
- let multiSelectButton;
+     let multiSelectButton;
  let isSelectionMode: boolean       = false;
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
@@ -63,7 +72,7 @@
  let accessTokenSnackbar: Snackbar;
  let linkSnackbar: Snackbar;
 
- const linkClickHandler = (event: ClickEvent) => {
+ const linkClickHandler = async (event: ClickEvent) => {
      if (!isSelectionMode) return;
 
      event.preventDefault();
@@ -72,8 +81,11 @@
      clickedURL = event.target.closest('a')?.href;
      if (clickedURL) {
          linkSnackbar.open(clickedURL);
-         sendMessage('openTab', { url: clickedURL }, 'background');
+         const parsePageResult: ParsePageResult = await sendMessage('openTab', { url: clickedURL }, 'background');
          //chrome.runtime.sendMessage({ type: 'openTab', url: clickedURL });
+
+         await sendParsePageResult(parsePageResult);
+         console.log('linkClickHandler: end');
      }
  }
 
@@ -132,19 +144,21 @@
  if (neverLoad) import('../background');
 </script>
 
-<button id="start-button" on:click={toggleSelectionMode}>
-</button>
+{#if isMain}
+  <button id="ponpon-start-button" on:click={toggleSelectionMode}>
+  </button>
+{/if}
 
 {#if isSelectionMode}
-  <Button id="done-button" on:click={cancelSelectionMode} variant="raised" class="button-shaped-round">
+  <Button id="ponpon-done-button" on:click={cancelSelectionMode} variant="raised" class="ponpon-button-shaped-round">
     <Label>Done</Label>
   </Button>
 
-  <Button id="login-button" on:click={getAccessToken} variant="outlined" class="button-shaped-round">
+  <Button id="ponpon-login-button" on:click={getAccessToken} variant="outlined" class="ponpon-button-shaped-round">
     <Label>Get Access Token</Label>
   </Button>
 
-  <!-- <Button id="login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="button-shaped-round">
+  <!-- <Button id="ponpon-login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="ponpon-button-shaped-round">
        <Label>Login</Label>
        </Button> -->
 {/if}
@@ -161,7 +175,7 @@
 
 <style>
  @use './login.sccs';
- :global(#start-button) {
+ :global(#ponpon-start-button) {
    position: fixed;
    top: 50px;
    left: 0;
@@ -176,14 +190,14 @@
    cursor: pointer;
  }
 
- :global(#done-button) {
+ :global(#ponpon-done-button) {
    position: fixed;
    top: 78px;
    left: 18px;
    z-index: 10000;
    /* border-radius: 50px; */
  }
- :global(#login-button) {
+ :global(#ponpon-login-button) {
    position: fixed;
    top: 130px;
    left: 18px;

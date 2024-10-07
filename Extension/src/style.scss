@@ -9,23 +9,23 @@
 @use '@material/button/mixins' as mdc-button;
 
 // XXX round does not work. 'border-radius: 36px' does not change the shape of hover
-.button-shaped-round {
+.ponpon-button-shaped-round {
     @include mdc-button.shape-radius(100%);
     // border-radius: 36px !important;
 }
 
-.small-vspace {
+.ponpon-small-vspace {
   height: 1em !important;
 }
 
-.vspace {
+.ponpon-vspace {
   height: 1.6em !important;
 }
 
-.large-vspace {
+.ponpon-large-vspace {
   height: 3em !important;
 }
 
-.center {
+.ponpon-center {
     text-align: center;
 }

@@ -1,25 +1,59 @@
 import browser from 'webextension-polyfill';
-import { detect } from 'detect-browser';
 import * as conf from './conf';
 import { sendMessage, onMessage } from 'webext-bridge/background';
+//import { ParsePageResult } from './types';
+export interface ParsePageResult {
+     title: string;
+ }
 
 console.log('background script running...');
 
 onMessage('openTab', async ({ data }) => {
-    const tab: browser.Tabs.Tab = await browser.tabs.create({ url: data.url, active: false });
-
-    browser.tabs.onUpdated.addListener((tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, tabInfo) => {
-        if (changeInfo.status == 'completed') {
-            console.log(`Tab {tabId} is completed. Sending parse`);
-            sendMessage('parse', {}, 'content-script@' + tab.id);
-        }
-    }, {
-        tabId: tab.id,
-        properties: [ 'status' ],
+    // Define a Promise to wait for the tab to load completely
+    let tabPromise = new Promise<browser.Tabs.Tab>((resolve) => {
+        browser.tabs.onUpdated.addListener(function listener(_tabId, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, tab) {
+            // Check if the updated tab has the target URL and is fully loaded
+            if (tab.url === data.url && changeInfo.status === 'complete') {
+                // Remove the listener and resolve the Promise with the tab info
+                browser.tabs.onUpdated.removeListener(listener);
+                resolve(tab);
+            }
+        });
     });
 
-    return { tabId: tab.id };
+    // Create a new inactive tab with the target URL
+    const tab = await browser.tabs.create({ url: data.url, active: false });
+
+    // Wait for the tab to load completely
+    const completedTab = await tabPromise;
+
+    // Send a message to the content script in the completed tab
+    console.log(`Tab ${completedTab.id} is completed. Sending parse`);
+    const result = await sendMessage('parse', {}, 'content-script@' + completedTab.id);
+
+    return { parsePageResult: result.parsePageResult };
 });
+
+// onMessage('openTab', async ({ data }) => {
+//     let tab: browser.Tabs.Tab;
+
+//     browser.tabs.onUpdated.addListener(function listener(tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, _tabInfo) {
+//         if (tab.url === data.url && changeInfo.status === 'complete') {
+//             browser.tabs.onUpdated.removeListener(listener);
+//             console.log(`Tab {tabId} is completed. Sending parse`);
+//             //browser.storage.local.set({ [ `openedByBS_{tab.id}`]: true });
+
+//             sendMessage('parse', {}, 'content-script@' + tab.id);
+//         }
+//     }, {
+//         //tabId: tab?.id,
+//          properties: [ 'status' ],
+//     });
+
+//     tab = await browser.tabs.create({ url: data.url, active: false });
+
+//     return { tabId: tab.id };
+// });
 
 /**
     Gets an access token from any of running Requestland in tabs.
