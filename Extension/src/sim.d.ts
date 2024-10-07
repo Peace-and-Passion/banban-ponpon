@@ -1,5 +1,5 @@
 import { ProtocolWithReturn } from "webext-bridge";
-import { ParsePageResult } from './types';
+import type { ParsePageResult } from './types_dummy';
 
 declare module "webext-bridge" {
     export interface ProtocolMap {

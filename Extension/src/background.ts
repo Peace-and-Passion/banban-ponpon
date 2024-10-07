@@ -1,10 +1,10 @@
 import browser from 'webextension-polyfill';
 import * as conf from './conf';
 import { sendMessage, onMessage } from 'webext-bridge/background';
-//import { ParsePageResult } from './types';
-export interface ParsePageResult {
-     title: string;
- }
+import type { ParsePageResult } from './types_dummy';
+// export interface ParsePageResult {
+//      title: string;
+//  }
 
 console.log('background script running...');
 
@@ -34,27 +34,6 @@ onMessage('openTab', async ({ data }) => {
     return result;
 });
 
-// onMessage('openTab', async ({ data }) => {
-//     let tab: browser.Tabs.Tab;
-
-//     browser.tabs.onUpdated.addListener(function listener(tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, _tabInfo) {
-//         if (tab.url === data.url && changeInfo.status === 'complete') {
-//             browser.tabs.onUpdated.removeListener(listener);
-//             console.log(`Tab {tabId} is completed. Sending parse`);
-//             //browser.storage.local.set({ [ `openedByBS_{tab.id}`]: true });
-
-//             sendMessage('parse', {}, 'content-script@' + tab.id);
-//         }
-//     }, {
-//         //tabId: tab?.id,
-//          properties: [ 'status' ],
-//     });
-
-//     tab = await browser.tabs.create({ url: data.url, active: false });
-
-//     return { tabId: tab.id };
-// });
-
 /**
     Gets an access token from any of running Requestland in tabs.
   */
@@ -68,9 +47,9 @@ export async function getAccessTokenFromTab() {
         const promise = (async () => {
             try {
                 console.log('getAccessTokenFromBackground: sending getAccessTokenFromContextScript to ' + tab.id)
-                const response = await sendMessage('getAccessTokenFromContextScript', {}, 'content-script@' + tab.id);
-                console.log(`getAccessTokenFromBackground: got AT from tab ${tab.id}`);
-                return response;
+                const accessToken = await sendMessage('getAccessTokenFromContextScript', {}, 'content-script@' + tab.id);
+                console.log(`getAccessTokenFromBackground: got AT ${accessToken} from tab ${tab.id}`);
+                return accessToken;
             } catch (error) {
                 console.error(`getAccessTokenFromBackground: Failed to get AT from tab ${tab.id}:`, error);
                 return null;

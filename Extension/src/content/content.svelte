@@ -11,8 +11,8 @@
  import browser from 'webextension-polyfill';
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import Button, { Label } from '@smui/button';
+ import type { ParsePageResult } from '../types_dummy';
  // import { parseResponse } from './page_parser/parser/response-parser';
- // import type { ParsePageResult } from '../types';
  //import { ParsePageResult } from './page_parser/types';
  import Kitchen from '@smui/snackbar/kitchen';
  import * as conf from '../conf';
@@ -21,9 +21,6 @@
  import 'svelte-material-ui/themes/svelte.css' // init Svelte Material UI with 'svelte' theme
  import '../style.scss';                       // load our global CSS
 
-export interface ParsePageResult {
-     title: string;
- }
  console.log('content.svelte started on page: ' + window.location.origin);
 
  let isMain: boolean = true;                       // main script with the multi selectin button
@@ -52,7 +49,7 @@ export interface ParsePageResult {
      //
 //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
-     const parsePageResult: ParsePageResult = { title: "hello" };
+     const parsePageResult: ParsePageResult = { title: "hello" };       // YYY replace with page_parser
      //const parsePageResult: ParsePageResult = await parseResponse();
      window.close();
      return parsePageResult;
@@ -69,7 +66,6 @@ export interface ParsePageResult {
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
  // let accessToken: string;
- let accessTokenSnackbar: Snackbar;
  //let linkSnackbar: Snackbar;
 
  const linkClickHandler = async (event: ClickEvent) => {
@@ -106,14 +102,10 @@ export interface ParsePageResult {
      document.removeEventListener('click', linkClickHandler);
  }
 
- async function getAccessToken() {
- }
-
  async function sendParsePageResult(parsePageResult: ParsePageResult, url: string) {
      try {
          console.log('getAccessToken: start');
          const accessToken = await loginComponent.getAccessToken();
-         // accessTokenSnackbar.open();
          console.log('getAccessToken: end');
 
          console.log('sendParsePageResult: start');
@@ -137,12 +129,17 @@ export interface ParsePageResult {
          } else {
              const errorMsg = await response.text();
              pushToKitchen('putCard: ' + errorMsg);
-	     throw new Error("Connection error for " + conf.apiUrl + ': ' + errorMsg);
+	     throw new Error("Connection error for " + conf.apiURL + ': ' + errorMsg);
 	 }
      } catch (error) {
          pushToKitchen('putCard: ' + error.toString());
 	 console.log("sendParsePageResult: fetch() error: "+ error.toString());
      }
+ }
+
+ async function getAccessToken() {
+     const accessToken = await loginComponent.getAccessToken();
+     pushToKitchen('getAccessToken test: ' + accessToken);
  }
 
  export function pushToKitchen(msg: string) {
@@ -161,10 +158,14 @@ export interface ParsePageResult {
          // ],
          dismissButton: true,
          onDismiss: () => (action = 'Dismissed'),
-         onClose: (e) => {  reason = e.detail.reason ?? 'Undefined.';   },
+         // onClose: (e) => {  reason = e.detail.reason ?? 'Undefined.';   },
      });
  }
-     // toggleSelectionMode(); // for test
+
+ // enable selection mode if blank.html
+ if (window.location.pathname.endsWith('blank.html')) {
+     toggleSelectionMode();
+ }
 
  // start the content script
  dispatch();
@@ -195,14 +196,7 @@ export interface ParsePageResult {
 {/if}
 
 <Kitchen bind:this={kitchen} dismiss$class="material-icons" />
-<!-- <Snackbar bind:this={accessTokenSnackbar} timeoutMs={4000}>
-     <Label>{accessToken}</Label>
-     </Snackbar>
--->
-<!-- <Snackbar bind:this={linkSnackbar} timeoutMs={4000}>
-     <Label>{clickedURL}</Label>
-     </Snackbar>
--->
+
 <Login bind:this={loginComponent} />
 
 <style>
