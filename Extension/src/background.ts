@@ -5,6 +5,22 @@ import { sendMessage, onMessage } from 'webext-bridge/background';
 
 console.log('background script running...');
 
+onMessage('openTab', async ({ data }) => {
+    const tab: browser.Tabs.Tab = await browser.tabs.create({ url: data.url, active: false });
+
+    browser.tabs.onUpdated.addListener((tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, tabInfo) => {
+        if (changeInfo.status == 'completed') {
+            console.log(`Tab {tabId} is completed. Sending parse`);
+            sendMessage('parse', {}, 'content-script@' + tab.id);
+        }
+    }, {
+        tabId: tab.id,
+        properties: [ 'status' ],
+    });
+
+    return { tabId: tab.id };
+});
+
 /**
     Gets an access token from any of running Requestland in tabs.
   */
