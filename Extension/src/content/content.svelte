@@ -25,21 +25,6 @@
 
  let isMain: boolean = true;                       // main script with the multi selectin button
 
- //
- // purpose dispatcher
- //
- async function dispatch() {
-     if (window.location.origin == conf.originUri) {
-         isMain = false;
-         if (window.location.pathname == 'login-proxy-view') {
-             loginProxy();
-             return;
-         }
-     } else {
-         //
-     }
- }
-
  onMessage('parse', async () => {
      // if (window.location.origin == conf.originUri) {
      //     cancelSelectionMode();
@@ -167,8 +152,13 @@
      toggleSelectionMode();
  }
 
- // start the content script
- dispatch();
+ // if request.land or dev server, stop showing the selection mode button
+ if (window.location.origin == conf.originUri) {
+     isMain = false;
+     if (window.location.pathname == 'login-proxy-view') {
+         loginProxy();
+     }
+ }
 
  // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
  export let neverLoad = false;
