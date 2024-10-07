@@ -11,19 +11,24 @@
 
 
 
-import baseSanitizeHtml from 'npm:sanitize-html'; // sanitizeHtml as baseSanitizeHtml
-import {Sanitizer_Allow_Tags, Sanitizer_Allow_Attributes} from '../hm-conf.ts';
+// import baseSanitizeHtml from 'npm:sanitize-html'; // sanitizeHtml as baseSanitizeHtml
+// import {Sanitizer_Allow_Tags, Sanitizer_Allow_Attributes} from '../hm-conf.ts';
 
-interface HTMLOption {
-    allowedTags: string[];
-    allowedAttributes: any;
-}
+// interface HTMLOption {
+//     allowedTags: string[];
+//     allowedAttributes: any;
+// }
 
-// allowed tags are defined on conf.py
-const defaultOption: HTMLOption = {
-    allowedTags: Sanitizer_Allow_Tags,
-    allowedAttributes: Sanitizer_Allow_Attributes,
-}
+// // allowed tags are defined on conf.py
+// const defaultOption: HTMLOption = {
+//     allowedTags: Sanitizer_Allow_Tags,
+//     allowedAttributes: Sanitizer_Allow_Attributes,
+// }
+
+
+// export function sanitizeHtml(value: string): string {
+//     return baseSanitizeHtml(value, defaultOption);
+// }
 
 
 export function sanitizeHtml(value: string): string {

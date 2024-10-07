@@ -12,8 +12,8 @@
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import Button, { Label } from '@smui/button';
  import type { ParsePageResult } from '../types_dummy';
-//import { parseResponse } from './page_parser/parser/response-parser';
- //import { ParsePageResult } from './page_parser/types';
+ import { parseResponse } from './page_parser/parser/response-parser';
+ import { ParsePageResult } from './page_parser/types';
  import Kitchen from '@smui/snackbar/kitchen';
  import * as conf from '../conf';
  import { loginProxy } from './login-proxy';
@@ -49,8 +49,8 @@
      //
 //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
-     const parsePageResult: ParsePageResult = { title: "hello" };       // YYY replace with page_parser
-     // const parsePageResult: ParsePageResult = await parseResponse();
+     // const parsePageResult: ParsePageResult = { title: "hello" };       // YYY replace with page_parser
+     const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
      window.close();
      return parsePageResult;
  });
