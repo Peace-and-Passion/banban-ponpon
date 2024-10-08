@@ -82,8 +82,13 @@ function parseAmazon(document, url, parsePageResult) {
     parsePageResult.addImageURL(imageUrls, url);
 
     // 価格の抽出
-    const priceSelector = "#buybox .a-price .a-offscreen, #buybox #kindle-price";
-    const priceElement = document.querySelector(priceSelector);
+    let priceSelector = "#buybox .a-price .a-offscreen, #buybox #kindle-price";
+    let priceElement = document.querySelector(priceSelector);
+    if (!priceElement) {
+        priceSelector = ".a-price.a-text-price.apexPriceToPay .a-offscreen"
+        priceElement = document.querySelector(priceSelector);
+    }
+
     if (priceElement) {
         let priceTxt = priceElement.innerText;
         // 通貨記号の置換
