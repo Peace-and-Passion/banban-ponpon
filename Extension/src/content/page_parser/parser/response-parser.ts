@@ -1,9 +1,10 @@
 //import {DOMParser} from "https://esm.sh/linkedom";
 // import {JSDOM} from "https://esm.sh/jsdom";
 // import {JSDOM} from "jsdom";
-import {select} from "npm:xpath";
+// import {select} from "npm:xpath";
 import {ParsePageResult, ShopPrice, Currency} from '../types.ts';
 import {parseLdjson} from './ld-parser.ts';
+import {isAmazonDomain, parseAmazonPage} from './amazon.ts'
 import {findLdjson, findMicrodata, findDescription, findOgImage, findOgPriceCode, findOgPriceValue, findImagesFromMainImage, findSiteName} from "./structured-data-parser.js";
 import {isHTMLString, replaceURLToAbsolute, addTargetBlankToHref, decodeHtmlEntities} from "../utils/utils.ts";
 
@@ -51,6 +52,11 @@ export async function parseResponse(
   url: string,  // ページのURL
   baseParsePageResult?: ParsePageResult  // 途中までの解析結果（オプション）
 ): Promise<ParsePageResult> {
+
+  const urlObj = new URL(url);
+    if (isAmazonDomain(urlObj.hostname)) {
+        return parseAmazonPage(url)
+    }
 
   const parsePageResult: ParsePageResult = baseParsePageResult || new ParsePageResult();
 
