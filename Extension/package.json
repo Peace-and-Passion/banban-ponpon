@@ -5,6 +5,7 @@
   "main": "background.js",
   "scripts": {
     "dev": "vite",
+    "prod": "vite --mode production",
     "build2": "vite build",
     "format": "prettier --write .",
     "build": "node scripts/build.js",
@@ -47,7 +48,7 @@
     "webext-bridge": "^6.0.1",
     "webextension-polyfill": "^0.10.0"
   },
-  "resolutions": {
+  "overrides": {
     "vite": "^5.4.8"
   }
 }

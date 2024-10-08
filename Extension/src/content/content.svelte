@@ -182,13 +182,11 @@
     <Label>Done</Label>
   </Button>
 
-  <Button id="ponpon-login-button" on:click={getAccessToken} variant="outlined" class="ponpon-button-shaped-round">
-    <Label>Get Access Token</Label>
-  </Button>
-
-  <!-- <Button id="ponpon-login-button" on:click={loginComponent.openLoginModal} variant="outlined" class="ponpon-button-shaped-round">
-       <Label>Login</Label>
-       </Button> -->
+  <!-- <Button id="ponpon-at-button" on:click={getAccessToken} variant="outlined" class="ponpon-button-shaped-round">
+       <Label>Get Access Token</Label>
+       </Button>
+  -->
+  <Label id="ponpon-env-button" >{conf.apiURL}</Label>
 {/if}
 
 <Kitchen bind:this={kitchen} dismiss$class="material-icons" />
@@ -219,10 +217,22 @@
    z-index: 10000;
    /* border-radius: 50px; */
  }
- :global(#ponpon-login-button) {
+ :global(#ponpon-at-button) {
    position: fixed;
-   top: 130px;
+   top: 176px;
    left: 18px;
    z-index: 10000;
+   background-color: white;
+ }
+ :global(#ponpon-env-button) {
+   position: fixed;
+   top: 56px;
+   left: 26px;
+   z-index: 10000;
+   /* padding: 6px 1rem; */
+   /* border: 1px solid #e0e0e0;
+      border-radius: 6px; */
+   /* background-color: white; */
+   font-size: 7px;
  }
 </style>

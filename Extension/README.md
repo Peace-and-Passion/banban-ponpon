@@ -9,8 +9,12 @@
 ## Building and running locally
 
    cd Extension
-   npm install --force
+   npm install
    npm run dev
+
+## Locally running for production but not production build
+
+   npm run prod
 
 ## Load Ponpon as Chrome extension
 
