@@ -129,20 +129,20 @@ export class Passkey {
                 if (!this.tabInProgress) return;
                 this.tabInProgress = false;
 
+                // close the dialog XXX
+                // this.openProxyDialogPromise?.then((openDialogResult) => { openDialogResult.controller.cancel(); });
+
                 // set AT and userID if no error
-                if (event && event.data?.msg === 'login end') {
+                if (event && !event.data?.error) {
                     // this.verifyServerResponseBody(event.data);
                     console.log('authenticateInAnotherTab: ' + event.data?.value);
-                    this.accessToken = event.data?.value;
-                    resolve(event.data?.value);
+                    this.accessToken = event.data?.at;
+                    resolve(event.data?.at);
                     return;
                 }
 
                 // timeout by no event
                 reject(new Error("Passkey canceled"));
-
-                // close the dialog XXX
-                // this.openProxyDialogPromise?.then((openDialogResult) => { openDialogResult.controller.cancel(); });
             };
 
 

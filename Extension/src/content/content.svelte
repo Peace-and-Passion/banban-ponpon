@@ -124,8 +124,13 @@
  }
 
  async function getAccessToken() {
-     const accessToken = await loginComponent.getAccessToken();
-     pushToKitchen('getAccessToken test: ' + accessToken);
+     try {
+         const accessToken = await loginComponent.getAccessToken();
+         pushToKitchen('getAccessToken test: ' + accessToken);
+     } catch (error) {
+         pushToKitchen('putCard: ' + error.toString());
+	 console.log("getAccessToken: fetch() error: "+ error.toString());
+     }
  }
 
  export function pushToKitchen(msg: string) {
