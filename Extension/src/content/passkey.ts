@@ -69,7 +69,7 @@ export class Passkey {
 
     /** Authenticate user or register passkey in another tab for Chrome PWA which does not support passkeys */
     public async processInAnotherTab(land_id: string|undefined, register: boolean): Promise<string> {
-        return new Promise<string>(async (resolve, _reject) => {
+        return new Promise<string>(async (resolve, reject) => {
             try {
                 await this.processInAnotherTabBody(land_id, register, true);
                 resolve(this.accessToken as string);
@@ -84,9 +84,8 @@ export class Passkey {
                     this.openProxyDialogPromise.then(() => {
                         resolve(this.accessToken as string);
                     });
-                    return;
                 }
-                throw err;
+                reject(err);
             }
         });
     }
@@ -111,9 +110,12 @@ export class Passkey {
         let newTab: Window|null;
         this.openerID_send = randomString(10);
 
-        return new Promise<void>((resolve, _reject) => {
-            const handleMessage = async (event: MessageEvent) => {
-                if (event.origin !== conf.originUri || event.data?.openerID !== this.openerID_send) {
+        return new Promise<void>((resolve, reject) => {
+
+            // 'message' handler for receiving _VerifyAuthenticationResponse
+            // if event is undefined, this handles time out.
+            const handleMessage = async (event: MessageEvent|undefined) => {
+                if (event && (event.origin !== conf.originUri || event.data?.openerID !== this.openerID_send)) {
                     return;
                 }
 
@@ -128,16 +130,19 @@ export class Passkey {
                 this.tabInProgress = false;
 
                 // set AT and userID if no error
-                if (event.data?.msg === 'login end') {
+                if (event && event.data?.msg === 'login end') {
                     // this.verifyServerResponseBody(event.data);
                     console.log('authenticateInAnotherTab: ' + event.data?.value);
                     this.accessToken = event.data?.value;
                     resolve(event.data?.value);
+                    return;
                 }
+
+                // timeout by no event
+                reject(new Error("Passkey canceled"));
 
                 // close the dialog XXX
                 // this.openProxyDialogPromise?.then((openDialogResult) => { openDialogResult.controller.cancel(); });
-
             };
 
 
@@ -170,10 +175,12 @@ export class Passkey {
 
             newTab.focus();
 
-            // setTimeout(() => {
-            //     window.removeEventListener("message", handleMessage);
-            //     reject(new Error("Passkey canceled"));
-            // }, 10000);
+            // time timeout
+            setTimeout(() => {
+                console.warn('processInAnotherTabBody: reject by timeout');
+                handleMessage(undefined);
+            }, conf.Passkey_Dialog_Timeout * 1000);
+                //}, 12 * 1000);
         });
     }
 
