@@ -35,7 +35,7 @@
 //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
      // const parsePageResult: ParsePageResult = { title: document.title };       // YYY replace with page_parser
-     const parsePageResult: ParsePageResult = await parseResponse();
+     const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
      window.close();
      return parsePageResult;
  });
