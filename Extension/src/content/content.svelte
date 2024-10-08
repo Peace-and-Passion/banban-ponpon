@@ -110,15 +110,15 @@
              // 	     })
          });
 	 if (response.ok) {
-             pushToKitchen('putCard: ' + parsePageResult.title || 'OK');
+             // pushToKitchen('putCard: ' + parsePageResult.title || 'OK');
              //console.log('sendParsePageResult: start');
          } else {
              const errorMsg = await response.text();
-             pushToKitchen('putCard: ' + errorMsg);
+             // pushToKitchen('putCard: ' + errorMsg);
 	     throw new Error("Connection error for " + conf.apiURL + ': ' + errorMsg);
 	 }
      } catch (error) {
-         pushToKitchen('putCard: ' + error.toString());
+         // pushToKitchen('putCard: ' + error.toString());
 	 console.log("sendParsePageResult: fetch() error: "+ error.toString());
      }
  }
