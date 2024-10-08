@@ -25,21 +25,6 @@
 
  let isMain: boolean = true;                       // main script with the multi selectin button
 
- //
- // purpose dispatcher
- //
- async function dispatch() {
-     if (window.location.origin == conf.originUri) {
-         isMain = false;
-         if (window.location.pathname == 'login-proxy-view') {
-             loginProxy();
-             return;
-         }
-     } else {
-         //
-     }
- }
-
  onMessage('parse', async () => {
      // if (window.location.origin == conf.originUri) {
      //     cancelSelectionMode();
@@ -49,8 +34,8 @@
      //
 //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
-     // const parsePageResult: ParsePageResult = { title: "hello" };       // YYY replace with page_parser
-     const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
+     // const parsePageResult: ParsePageResult = { title: document.title };       // YYY replace with page_parser
+     const parsePageResult: ParsePageResult = await parseResponse();
      window.close();
      return parsePageResult;
  });
@@ -116,7 +101,7 @@
              body: new URLSearchParams({
                  token: accessToken || '',
                  parse_page_results: JSON.stringify([parsePageResult]),
-                 //url: JSON.stringify(url)
+                 // url: JSON.stringify(url)
              }).toString()
 	     // body : JSON.stringify({
              //     token: accessToken,
@@ -168,8 +153,13 @@
      toggleSelectionMode();
  }
 
- // start the content script
- dispatch();
+ // if request.land or dev server, stop showing the selection mode button
+ if (window.location.origin == conf.originUri) {
+     isMain = false;
+     if (window.location.pathname == 'login-proxy-view') {
+         loginProxy();
+     }
+ }
 
  // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
  export let neverLoad = false;

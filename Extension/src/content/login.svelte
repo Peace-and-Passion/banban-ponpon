@@ -37,53 +37,42 @@
      }
  }
 
- //
- //      function openLoginDialog() {
- //          browser.tabs.create({
- //              url: 'https://request.land/passkey-proxy',
- //              active: true
- //          });
- //      }
- //browser.cookies.Cookie.get('');
+ /**
 
+ */
  async function login(): string {
-     const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
+     const accessToken = await passkey.authenticate({land_id_or_userID: undefined});
+     //const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
      open = false;
      return accessToken;
  }
 
 
- // Receive getAt and return AT.
+ /**
+    Event handler for get accessToken from context script.
+
+    Ask hm-app to set access token to DOM as <meta name="accessToken" description="alskjf09b8_flasj098bsf">.
+    We detect the modification using MutationObserver and return it to the background script.
+  */
  onMessage('getAccessTokenFromContextScript', async () => {
      console.log('received getAccessTokenFromContextScript');
 
      // ask hm-app to send AT or null
      return new Promise<void>(async (resolve, reject) => {
-         // const handler = async (event) => {
-         //     console.log('received ' + String(event));
-         //
-         //     // if (event.origin === conf.webExtID && event.source == window && event.data.type === 'answerAccessTokenFromPageScript') {
-         //     //     resolve(event.data.value);
-         //     //     window.removeEventListener('message', handler);
-         //     //     return;
-         //     // }
-         // }
-         //
-         // window.addEventListener('message', handler);
-         //
          const observer = new MutationObserver((mutations) => {
              mutations.forEach((mutation) => {
                  const metaTag = document.querySelector('meta[name="accessToken"]');
                  if (metaTag) {
                      const accessToken = metaTag.getAttribute('content');
                      console.log('Access Token:', accessToken);
-                     observer.disconnect(); // アクセストークンを取得したら監視を停止
-                     resolve(accessToken);
+                     observer.disconnect();
+
+                     resolve(accessToken === 'null' ? null : accessToken);
                  }
              });
          });
 
-         // DOMの変化を監視
+         // detect mutation of DOM
          observer.observe(document.head, { childList: true, subtree: true });
 
          window.postMessage('getAccessTokenFromPageScript', conf.originUri);
