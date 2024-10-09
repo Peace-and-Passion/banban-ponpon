@@ -4,12 +4,15 @@
      Usage: Give either label or slot.
      variant is either  flat, raised or outlined. The default is raised.
 
-     <Button id="ponpon-done-button" label="Done" on:click={cancelSelectionMode}>
-     </Button>
+     Usage:
+       import Button from '../resources/button.svelte';
 
-     <Button on:click={login} valiant="flat">
-     Sign in
-     </Button>
+       <Button id="ponpon-done-button" label="Done" on:click={cancelSelectionMode}>
+       </Button>
+
+       <Button on:click={login} valiant="flat">
+       Sign in
+       </Button>
 
      @author Hirano Satoshi
      @copyright 2024 Peace and Passion

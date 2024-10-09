@@ -57,15 +57,18 @@
 
   types_dummy.ts
 
-## To use components in [Svelte Material UI](https://sveltematerialui.com/)
+## To use UI components in src/resources
 
-- Import components
+- See each file in src/resources for usage.
 
-  <script>
-    import Card from '@smui/card';
-  </script>
+  import Button from '../resources/button.svelte';
 
-  <Card padded>A simple padded card.</Card>
+  <Button id="ponpon-done-button" label="Done" on:click={cancelSelectionMode}>
+  </Button>
+
+  <Button on:click={login} valiant="flat">
+  Sign in
+  </Button>
 
 ## background.ts
 
@@ -81,3 +84,7 @@
 - Open Firefox's [debugging page](about:debugging#/runtime/this-firefox) (`about:debugging#/runtime/this-firefox`)
 - Click "Load Temporary Add-on..."
 - Navigate to this project's root and select `manifest.json`
+
+## Caution
+
+- Since CSS conflists with page scripts, we cannot use component libraries such as  [Svelte Material UI](https://sveltematerialui.com/).
