@@ -8,15 +8,13 @@
 -->
 
 <script lang="ts">
- import { onMount } from 'svelte';
  import browser from 'webextension-polyfill';
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import Button from '../resources/button.svelte';
  import Modal from '../resources/Modal.svelte';
-  import type { ParsePageResult } from '../types_dummy';
+ import Toast from '../resources/toast';
  import { parseResponse } from './page_parser/parser/response-parser';
  import { ParsePageResult } from './page_parser/types';
- import Toast from '../resources/toast';
  import * as conf from '../conf';
  import { loginProxy } from './login-proxy';
  import Login from './login.svelte';
@@ -27,15 +25,7 @@
  let isMain: boolean = true;                       // main script with the multi selectin button
 
  onMessage('parse', async () => {
-     // if (window.location.origin == conf.originUri) {
-     //     cancelSelectionMode();
-     //     isMain = false;
-     //     return;
-     // }
-     //
-     //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
-     // const parsePageResult: ParsePageResult = { title: document.title };       // YYY replace with page_parser
      const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
      window.close();
      return parsePageResult;
@@ -50,8 +40,6 @@
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
- // let accessToken: string;
- //let linkSnackbar: Snackbar;
 
  const linkClickHandler = async (event: ClickEvent) => {
      if (!isSelectionMode) return;
@@ -61,9 +49,7 @@
 
      const clickedURL: string = event.target.closest('a')?.href;
      if (clickedURL) {
-         //linkSnackbar.open(clickedURL);
          const parsePageResult: ParsePageResult = await sendMessage('openTab', { url: clickedURL }, 'background');
-         //chrome.runtime.sendMessage({ type: 'openTab', url: clickedURL });
 
          await sendParsePageResult(parsePageResult, clickedURL);
          console.log('linkClickHandler: end');
@@ -95,13 +81,11 @@
 
          console.log('sendParsePageResult: start');
 	 const response = await fetch(conf.apiURL + "/v1/putCardExt", {
-             // const response = await fetch("https://localhost:50000" + "/v1/putCardExt", {
 	     method : "POST",
 	     headers : {'Content-type' : 'application/x-www-form-urlencoded'},
              body: new URLSearchParams({
                  token: accessToken || '',
                  parse_page_results: JSON.stringify([parsePageResult]),
-                 // url: JSON.stringify(url)
              }).toString()
 	     // body : JSON.stringify({
              //     token: accessToken,
@@ -111,7 +95,6 @@
          });
 	 if (response.ok) {
              if (!conf.isProduction) Toast.show('putCard: ' + parsePageResult.title || 'OK');
-             //console.log('sendParsePageResult: start');
          } else {
              const errorMsg = await response.text();
              if (!conf.isProduction) Toast.show('putCard: ' + errorMsg);
@@ -146,11 +129,6 @@
      }
  }
 
- Toast.show('Hello');
- setTimeout(() => {
-     Toast.show('World');
-     }, 500);
-
  // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
  export let neverLoad = false;
 
@@ -167,12 +145,15 @@
           on:click={cancelSelectionMode}>
   </Button>
 
-  <!-- <Button id="ponpon-at-button" on:click={getAccessToken} variant="outlined" class="ponpon-button-shaped-round">
-       <Label>Get Access Token</Label>
-       </Button>
-  -->
-  <div id="ponpon-env-button" >{conf.apiURL}</div>
+  {#if !conf.isProduction}
+    <div id="ponpon-env-button" >{conf.apiURL}</div>
+
+    <Button id="ponpon-at-button" on:click={getAccessToken} variant="outlined">
+      Get Access Token
+    </Button>
+  {/if}
 {/if}
+
 
 <Login bind:this={loginComponent} />
 
