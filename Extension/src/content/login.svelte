@@ -9,9 +9,9 @@
 
 <script lang="ts">
  import browser from 'webextension-polyfill';
- import Dialog, { Title, Content, Actions } from '@smui/dialog';
+ import Modal from '../resources/Modal.svelte';
  import * as conf from '../conf';
- import Button, { Label } from '@smui/button';
+ import Button from '../resources/button.svelte';
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
  import { Passkey } from './passkey';
  import '../style.scss';
@@ -39,7 +39,7 @@
 
  /**
 
- */
+  */
  async function login(): string {
      const accessToken = await passkey.authenticate({land_id_or_userID: undefined});
      //const accessToken = await passkey.authenticate({land_id_or_userID: 'hhh//h-com'});
@@ -81,21 +81,14 @@
 
 </script>
 
-<Dialog
-    bind:open
-    aria-labelledby="simple-title"
-    aria-describedby="simple-content"
->
-  <Title id="simple-title">Sign in</Title>
-  <Content id="simple-content">
-    <div class="center">
-      <div class="ponpon-large-vspace"></div>
-      <Button id="ponpon-signin-button" on:click={login} variant="raised" class="ponpon-button-shaped-round">
-        Sign in
-      </Button>
-    </div>
-  </Content>
-</Dialog>
+<!-- NOT USED YET -->
+<Modal isOpen={open} title="Sign in" onClose={() => {open = false}}>
+  <div class="ponpon-center">
+    <Button id="ponpon-signin-button" on:click={login}>
+      Sign in
+    </Button>
+  </div>
+</Modal>
 
 <style>
  :global(#ponpon-signin-button) {

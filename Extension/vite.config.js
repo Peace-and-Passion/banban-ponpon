@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
         build: {
             emptyOutDir: true,
             outDir: 'dist',
+            sourcemap: true,
             rollupOptions: {
                 input: {
                     content: './src/content.ts',
@@ -31,6 +32,7 @@ export default defineConfig(({ mode }) => {
             svelte({
                 compilerOptions: {
                     dev: !production,
+                    sourcemap: true,
                 },
                 preprocess: sveltePreprocess(),
             }),

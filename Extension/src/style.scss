@@ -6,14 +6,6 @@
   @since 2024/10/02
 
  */
-@use '@material/button/mixins' as mdc-button;
-
-// XXX round does not work. 'border-radius: 36px' does not change the shape of hover
-.ponpon-button-shaped-round {
-    @include mdc-button.shape-radius(100%);
-    // border-radius: 36px !important;
-}
-
 .ponpon-small-vspace {
   height: 1em !important;
 }
@@ -28,4 +20,35 @@
 
 .ponpon-center {
     text-align: center;
+}
+
+#ponpon-toast-container {
+    position: fixed;
+    top: 150px;
+    right: 30px;
+    z-index: 10000;
+}
+.ponpon-toast {
+    background-color: lightblue; /* Default color */
+    width: 170px;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 1rem; /* Set font size */
+    padding: 1rem;
+    border-radius: 6px;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.ponpon-default-toast {
+    background-color: lightblue; /* Default color */
+}
+
+.ponpon-success-toast {
+    background-color: lightgreen; /* Success color */
+}
+
+.ponpon-error-toast {
+    background-color: lightcoral; /* Error color */
 }

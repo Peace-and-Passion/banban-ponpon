@@ -8,17 +8,18 @@
 -->
 
 <script lang="ts">
+ import { onMount } from 'svelte';
  import browser from 'webextension-polyfill';
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
- import Button, { Label } from '@smui/button';
- import type { ParsePageResult } from '../types_dummy';
+ import Button from '../resources/button.svelte';
+ import Modal from '../resources/Modal.svelte';
+  import type { ParsePageResult } from '../types_dummy';
  import { parseResponse } from './page_parser/parser/response-parser';
  import { ParsePageResult } from './page_parser/types';
- import Kitchen from '@smui/snackbar/kitchen';
+ import Toast from '../resources/toast';
  import * as conf from '../conf';
  import { loginProxy } from './login-proxy';
  import Login from './login.svelte';
- import 'svelte-material-ui/themes/svelte.css' // init Svelte Material UI with 'svelte' theme
  import '../style.scss';                       // load our global CSS
 
  console.log('content.svelte started on page: ' + window.location.origin);
@@ -32,7 +33,7 @@
      //     return;
      // }
      //
-//     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
+     //     browser.storage.local.get({ [ `openedByBS_{tab.id}` });
      console.log('parse: start');
      // const parsePageResult: ParsePageResult = { title: document.title };       // YYY replace with page_parser
      const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
@@ -44,7 +45,6 @@
  // script for the selection mode button
  //
 
- let kitchen: Kitchen;                            // Pushable Snackbar
  let multiSelectButton;
  let isSelectionMode: boolean       = false;
  let buttonYPosition: number        = 50;
@@ -95,7 +95,7 @@
 
          console.log('sendParsePageResult: start');
 	 const response = await fetch(conf.apiURL + "/v1/putCardExt", {
-         // const response = await fetch("https://localhost:50000" + "/v1/putCardExt", {
+             // const response = await fetch("https://localhost:50000" + "/v1/putCardExt", {
 	     method : "POST",
 	     headers : {'Content-type' : 'application/x-www-form-urlencoded'},
              body: new URLSearchParams({
@@ -110,15 +110,15 @@
              // 	     })
          });
 	 if (response.ok) {
-             if (!conf.isProduction) pushToKitchen('putCard: ' + parsePageResult.title || 'OK');
+             if (!conf.isProduction) Toast.show('putCard: ' + parsePageResult.title || 'OK');
              //console.log('sendParsePageResult: start');
          } else {
              const errorMsg = await response.text();
-             if (!conf.isProduction) pushToKitchen('putCard: ' + errorMsg);
+             if (!conf.isProduction) Toast.show('putCard: ' + errorMsg);
 	     throw new Error("Connection error for " + conf.apiURL + ': ' + errorMsg);
 	 }
      } catch (error) {
-         if (!conf.isProduction)  pushToKitchen('putCard: ' + error.toString());
+         if (!conf.isProduction)  Toast.show('putCard: ' + error.toString());
 	 console.log("sendParsePageResult: fetch() error: "+ error.toString());
      }
  }
@@ -126,31 +126,11 @@
  async function getAccessToken() {
      try {
          const accessToken = await loginComponent.getAccessToken();
-         pushToKitchen('getAccessToken test: ' + accessToken);
+         Toast.show('getAccessToken test: ' + accessToken);
      } catch (error) {
-         pushToKitchen('putCard: ' + error.toString());
+         Toast.show('putCard: ' + error.toString());
 	 console.log("getAccessToken: fetch() error: "+ error.toString());
      }
- }
-
- export function pushToKitchen(msg: string) {
-     kitchen.push({
-         props: {  variant: 'stacked',  },
-         label: msg,
-         // actions: [
-         //     {
-         //         onClick: () => (action = 'Something'),
-         //         text: 'Something',
-         //     },
-         //     {
-         //         onClick: () => (action = 'Another'),
-         //         text: 'Another',
-         //     },
-         // ],
-         dismissButton: true,
-         onDismiss: () => (action = 'Dismissed'),
-         // onClose: (e) => {  reason = e.detail.reason ?? 'Undefined.';   },
-     });
  }
 
  // enable selection mode if blank.html
@@ -166,6 +146,8 @@
      }
  }
 
+ Toast.show('Hello');
+
  // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
  export let neverLoad = false;
 
@@ -178,18 +160,16 @@
 {/if}
 
 {#if isSelectionMode}
-  <Button id="ponpon-done-button" on:click={cancelSelectionMode} variant="raised" class="ponpon-button-shaped-round">
-    <Label>Done</Label>
+  <Button id="ponpon-done-button" label="Done"
+          on:click={cancelSelectionMode}>
   </Button>
 
   <!-- <Button id="ponpon-at-button" on:click={getAccessToken} variant="outlined" class="ponpon-button-shaped-round">
        <Label>Get Access Token</Label>
        </Button>
   -->
-  <Label id="ponpon-env-button" >{conf.apiURL}</Label>
+  <div id="ponpon-env-button" >{conf.apiURL}</div>
 {/if}
-
-<Kitchen bind:this={kitchen} dismiss$class="material-icons" />
 
 <Login bind:this={loginComponent} />
 
@@ -215,7 +195,6 @@
    top: 78px;
    left: 18px;
    z-index: 10000;
-   /* border-radius: 50px; */
  }
  :global(#ponpon-at-button) {
    position: fixed;
