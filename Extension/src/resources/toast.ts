@@ -1,31 +1,22 @@
-/**
-次に、toastを作ろう。MaterializeCSSのToast風のものだ。
+const initialTop = 150;  // initial top of each toast
+const toastHeight = 40;  // height of a toast
+const spacing = 10; // トースト間のスペース
 
-仕様
-
-・Svelteではなく、TypeScriptで作る。toast.ts
-・Toast.show(msg)で画面右上にmsgを表示。
-・msgは1remのpaddingとborder-radius: 6pxがついている。水色のデフォルト以外の背景色はclassで変えられる。
-・msgは1秒間表示され、0.5秒で30px上に移動しながら徐々に消えるときに
- */
 class Toast {
-    private static toastContainer: HTMLDivElement;
+    private static toastCount: number = 0;
 
     // Private constructor to prevent instantiation
     private constructor() {}
 
-    static {
-        // Set up the toast container
-        Toast.toastContainer = document.createElement('div');
-        Toast.toastContainer.setAttribute("id", 'ponpon-toast-container');
-        document.body.appendChild(Toast.toastContainer);
-    }
-
     public static show(msg: string, className: string = 'ponpon-default-toast') {
+        // Update positions of the remaining toasts
+        Toast.updateToasts();
+
         const toast = document.createElement('div');
         toast.className = `ponpon-toast ${className}`;
         toast.innerText = msg;
-        Toast.toastContainer.appendChild(toast);
+        toast.style.top = `${initialTop}px`;  // Set the initial position of the toast
+        document.body.appendChild(toast);
 
         // Start the fade-out effect after 1 second
         setTimeout(() => {
@@ -34,9 +25,19 @@ class Toast {
 
             // Remove toast from DOM after the transition
             setTimeout(() => {
-                Toast.toastContainer.removeChild(toast);
+                document.body.removeChild(toast);
             }, 500); // Match the duration of the CSS transition
         }, 1000);
+    }
+
+    private static updateToasts() {
+        const toasts = document.querySelectorAll('.ponpon-toast');
+
+        for (let i = 0; i < toasts.length; i++) {
+            const toast = toasts[i];
+            const newTop = initialTop - ((i + 1) * (toastHeight + spacing));
+            toast.style.top = `${newTop}px`;
+        };
     }
 }
 
