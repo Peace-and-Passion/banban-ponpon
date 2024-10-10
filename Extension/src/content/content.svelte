@@ -10,6 +10,8 @@
 <script lang="ts">
  import browser from 'webextension-polyfill';
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
+ import { _, locale, init, addMessages, getLocaleFromNavigator } from 'svelte-i18n';
+
  import Button from '../resources/button.svelte';
  import Modal from '../resources/Modal.svelte';
  import Toast from '../resources/toast';
@@ -21,6 +23,19 @@
  import '../style.scss';                       // load our global CSS
 
  console.log('content.svelte started on page: ' + window.location.href);
+
+ // initialize locales
+ import en from '../../locales/en.json';
+ import ja from '../../locales/ja.json';
+ addMessages('en', en);
+ addMessages('ja', ja);
+ // add new locale here
+ init({
+     fallbackLocale: 'en',
+     initialLocale: getLocaleFromNavigator().split('-')[0]?.toLowerCase()
+ });
+
+
 
  let isMain: boolean                = true;       // main script with the multi selectin button
  let multiSelectButton: Button;
@@ -144,7 +159,13 @@
   </button>
 {/if}
 
+
 {#if isSelectionMode}
+  <!-- Header -->
+  <div class="header">
+    <h3>{$_('title')}</h3>
+  </div>
+
   <!-- Done button -->
   <Button id="ponpon-done-button" label="Done"
           on:click={cancelSelectionMode}>
@@ -165,6 +186,13 @@
 <Login bind:this={loginComponent} />
 
 <style>
+ .header {
+   position: fixed;
+   width: 100px;
+   top: 4px;
+   left: 50%;
+   transform: translateX(-50%);
+ }
  :global(#ponpon-start-button) {
    position: fixed;
    top: 50px;

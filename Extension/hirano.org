@@ -1,0 +1,86 @@
+** DOING ブラウザー拡張 Banban Ponpon                            :ponpon:ext:
+<2024-10-08 Tue>
+
+- [X] Productionと一緒に使うと ppa-hiranoとrequest.landが混じってpostMessage()でエラー
+  - ボタンをつけてみたが、各ページのCSとBSの定数も書き換えられない
+  - run prod新設
+- [ ] iconファイルをロードして、snackbarのcloseを消す
+- [ ] エラーが出たタブのクローズ
+- [ ] Kitchenでエラー
+    Uncaught (in promise) TypeError: Cannot read properties of null (reading 'push')
+        at pushToKitchen (content.svelte.js:609:11)
+        at content.svelte.js:595:5
+        at Generator.next (<anonymous>)
+        at content.svelte.js:489:67
+        at new Promise (<anonymous>)
+        at __awaiter (content.svelte.js:466:10)
+        at sendParsePageResult (content.svelte.js:564:10)
+        at content.svelte.js:542:10
+        at Generator.next (<anonymous>)
+        at fulfilled (content.svelte.js:469:22)
+    pushToKitchen @ content.svelte.js:609
+    (anonymous) @ content.svelte.js:595
+    (anonymous) @ content.svelte.js:489
+    __awaiter @ content.svelte.js:466
+    sendParsePageResult @ content.svelte.js:564
+    (anonymous) @ content.svelte.js:542
+    fulfilled @ content.svelte.js:469
+    Promise.then
+    step @ content.svelte.js:486
+    fulfilled @ content.svelte.js:469
+    Promise.then
+    step @ content.svelte.js:486
+    (anonymous) @ content.svelte.js:489
+    __awaiter @ content.svelte.js:466
+    linkClickHandler @ content.svelte.js:527Understand this error
+
+** DOING ブラウザー拡張でのユーザー認証 :user:login:ponpon:ext:
+<2024-10-03 Thu>
+
+- [X] ログインのtimeout
+- [X] proxyがCSにpostMessageをする際のセキュリティ確保
+- verifyServerResponse()はverificationResponseにopenerIDを追加して、サーバーから受け取ったauthenticateの返り値をpostMessageする
+  - これはCSに届かなかった postMsg(msg, 'chrome-extension://jdpcgdnhmbamgljldgbibpnmoaognnln')
+  - とりあえず'*'に送るようにしてCSに届いているが、悪意の第三者が設置したサイトから開かれたlogin-proxy-viewであったらATが盗まれるため、window.openerがCSか確認する
+
+     window.opener?.postMessage(verificationResponse, '*');
+
+  - window.openerがCSであるか？
+    - x 変数がアクセスできない
+  - x proxyがyamaを送り、yamaを受け取ったCSがkawaを送り、受け取ったproxyがevent.originがCSであるか確認
+    - x event.originに"null"が入っていた
+      - window.opener.thenにエラーが入っていた
+        - Exception: SecurityError: Blocked a frame with origin "https://ppa-hirano.peace-and-passion.com:50000" from accessing a cross-origin frame. at LoginProxyView.openerMessageHandler
+  - CSがサーバーからnonceをもらい、proxyに渡し、proxyがサーバーのsigninに渡すことで検証
+    - x 大掛かり
+  - refererでlogin-proxy-viewを開けないようにする？
+  - window.opener以外には届かないため、'*'でセキュリティ上の問題はない
+
+- [X] page scriptからcontent scriptにpostMessage(msg, chrome-extension://xx)できない
+  - '*'も届かない
+  - コンテンツスクリプトやウェブコンテキストスクリプトは targetOrigin を拡張機能 (バックグラウンドスクリプトやコンテンツスクリプト) と直接通信するために指定することはできません。ウェブやコンテンツのスクリプトは、 window.postMessage を targetOrigin を "*" にして使用することで、すべてのリスナーにブロードキャストすることができますが、これは拡張機能がそのようなメッセージのオリジンを特定することができないこと、他のリスナー (制御するべきでないものも含む) が待ち受けしている可能性があるため推奨されません。
+  - DOMに挿入する
+
+- [X] 関数の整備 ATの置き場所
+- [X] タブにリクエストランドがあり、ログインしていないときにATがnullになる
+- [ ] login-proxy-viewでデフォルトのHHH//h-comと、select passkeyを出す
+  - [ ] cookie.land_idがない場合は大きいselectボタン
+  - [ ] cookie.land_idがある場合は小さいselectボタン
+- [ ] 複数のATとユーザーの関係の整理
+- [ ] land_idも返す
+- [ ] DOMのATを消す
+
+** DOING Svelte :ext:ponpon:
+<2024-10-08 Tue>
+
+- [X] Svelte Material UIを独自のボタンに置き換える
+  - ページスクリプトのCSSが変わってしまうため
+  - [X] button
+  - [X] toast
+  - [X] modal
+- [X] vite-pluginで指定するviteのバージョンが低すぎて、viteが古い
+  - 最新が入っていた
+  - resolusions->overridesにして--forceを不要にした
+  - o @crxjs/vite-plugin@beta
+- [X] svelte-i18n
+  -

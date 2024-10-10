@@ -4,16 +4,16 @@
   "description": "Browser extension for Banban Board on Requestland",
   "main": "background.js",
   "scripts": {
-    "dev":           "BROWSER=chrome vite",
-    "dev:firefox":   "BROWSER=firefox vite",
-    "dev:safari":    "BROWSER=safari vite",
-    "prod":          "BROWSER=chrome vite --mode production",
-    "prod:firefox":  "BROWSER=firefox vite --mode production",
-    "prod:safari":   "BROWSER=safari vite --mode production",
-    "build":         "BROWSER=chrome vite build --mode production",
+    "dev": "BROWSER=chrome vite",
+    "dev:firefox": "BROWSER=firefox vite",
+    "dev:safari": "BROWSER=safari vite",
+    "prod": "BROWSER=chrome vite --mode production",
+    "prod:firefox": "BROWSER=firefox vite --mode production",
+    "prod:safari": "BROWSER=safari vite --mode production",
+    "build": "BROWSER=chrome vite build --mode production",
     "build:firefox": "BROWSER=firefox vite build --mode production",
-    "build:safari":  "BROWSER=safari vite build --mode production",
-    "format":        "prettier --write ."
+    "build:safari": "BROWSER=safari vite build --mode production",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "Hirano Satoshi, Togashi Auto, Peace and Passion",
@@ -46,6 +46,7 @@
   "dependencies": {
     "detect-browser": "^5.3.0",
     "svelte": "^4.0.5",
+    "svelte-i18n": "^4.0.0",
     "webext-bridge": "^6.0.1",
     "webextension-polyfill": "^0.10.0"
   }

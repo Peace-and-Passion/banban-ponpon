@@ -93,6 +93,32 @@
   Sign in
   </Button>
 
+** Internationalization (i18n)
+
+- [[https://github.com/kaisermann/svelte-i18n/tree/main/docs][Svelte-i18n]] was installed and initialized.
+
+- Usage. See  [[https://github.com/kaisermann/svelte-i18n/tree/main/docs][Svelte-i18n]] for detail.
+
+    <h3>{$_('title')}</h3>
+
+- To add a new language, Spanish for example.
+  - Create locales/es.json
+  - Add loader to main.svelte
+     import en from '../../locales/en.json';
+     import ja from '../../locales/ja.json';
+     import es from '../../locales/es.json';
+     addMessages('en', en);
+     addMessages('ja', ja);
+     addMessages('es', ja);
+
+
+** Vite
+
+- @crxjs/vite-plugin
+  - This is a problematic package that supports manifest.ts, HMR, compilation for developing browser
+    extensions. Since the @crxjs/vite-plugin@latest is obsolete and imports a very old version of
+    vite, we need to install @crxjs/vite-plugin@beta or newer, at this time ^2.0.0-beta.25.
+
 * Caution
 
 - Since CSS conflists with page scripts, we cannot use component libraries such as  [Svelte Material UI](https://sveltematerialui.com/).
