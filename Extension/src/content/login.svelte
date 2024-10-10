@@ -1,6 +1,6 @@
 <!--
 
-     Banban Ponpon: Browser extension for Banban board
+     Banban Ponpon: Login
 
      @author Hirano Satoshi
      @copyright 2024 Peace and Passion

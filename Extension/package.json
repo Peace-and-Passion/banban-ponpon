@@ -1,20 +1,22 @@
 {
-  "name": "REPLACEME",
+  "name": "Banban-Ponpon",
   "version": "1.0.0",
-  "description": "",
+  "description": "Browser extension for Banban Board on Requestland",
   "main": "background.js",
   "scripts": {
-    "dev": "vite",
-    "prod": "vite --mode production",
-    "build2": "vite build",
-    "format": "prettier --write .",
-    "build": "node scripts/build.js",
-    "build:prod": "node scripts/prod-build.js",
-    "build:chrome": "node scripts/package-extension.js",
-    "build:firefox": "node scripts/firefox-build.js"
+    "dev":           "BROWSER=chrome vite",
+    "dev:firefox":   "BROWSER=firefox vite",
+    "dev:safari":    "BROWSER=safari vite",
+    "prod":          "BROWSER=chrome vite --mode production",
+    "prod:firefox":  "BROWSER=firefox vite --mode production",
+    "prod:safari":   "BROWSER=safari vite --mode production",
+    "build":         "BROWSER=chrome vite build --mode production",
+    "build:firefox": "BROWSER=firefox vite build --mode production",
+    "build:safari":  "BROWSER=safari vite build --mode production",
+    "format":        "prettier --write ."
   },
   "keywords": [],
-  "author": "REPLACEME",
+  "author": "Hirano Satoshi, Togashi Auto, Peace and Passion",
   "license": "MIT",
   "type": "module",
   "devDependencies": {

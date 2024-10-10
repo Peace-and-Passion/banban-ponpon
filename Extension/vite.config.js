@@ -1,3 +1,10 @@
+/**
+     Banban Ponpon: Build configration
+
+     @author Hirano Satoshi
+     @copyright 2024 Peace and Passion
+     @since 2024/10/10
+ */
 import { defineConfig } from 'vite';
 import { crx } from '@crxjs/vite-plugin';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
@@ -8,6 +15,7 @@ import os from 'os';
 
 export default defineConfig(({ mode }) => {
     const production = mode === 'production';
+    const browser = process.env.BROWSER || 'chrome';
 
     return {
         build: {
@@ -43,7 +51,8 @@ export default defineConfig(({ mode }) => {
         },
         define: {
             PRODUCTION: JSON.stringify(production),
-            BUILD_HOST: JSON.stringify(os.hostname())
+            BUILD_HOST: JSON.stringify(os.hostname()),
+            BROWSER: JSON.stringify(browser),
         }
     };
 });

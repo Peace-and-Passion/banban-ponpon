@@ -1,0 +1,98 @@
+* Create your Git branch from master branch
+
+  git checkout -b master origin/master
+  git checkout -b your_name master
+  git push origin your_name
+
+# Build and run
+
+** Building and running locally on Chrome
+
+   cd Extension
+   npm install
+   npm run dev
+
+** Locally run on Chrome for deployed hm-server but not production build
+
+   npm run prod
+
+** Load Ponpon as Chrome extension
+
+- open chrome://extensions
+-  Press 「パッケージ化されていない拡張機能を読み込む」, and specify Extension/dist
+-  Press "Service Worker" to open devtools for the background script.
+- Set extension ID in conf.py of hm-server.
+
+*** Browser variations
+
+   npm run dev:firefox
+   npm run dev:safari
+   npm run prod:firefox
+   npm run prod:safari
+   npm run build:firefox
+   npm run build:safari
+
+*** Firefox
+
+- npm run dev:firefox
+- Open Firefox's [debugging page](about:debugging#/runtime/this-firefox) (`about:debugging#/runtime/this-firefox`)
+- Click "Load Temporary Add-on..."
+- Set extension ID in conf.py of hm-server.
+
+*** Safari
+
+- npm run dev:safari
+- Open ../Safari/REPLACEME.xcodeproj in xcode.
+- Build a target.
+- Set extension ID in conf.py of hm-server.
+
+** Open blank.html in Chrome
+
+  file:///Users/your_name/dev/banban-ponpon/Extension/blank.html
+
+- When you edit and save a file, Vite compiles it automatically and reload with Hot Module
+  Replacement (HMR). However, you need to reload the blank.html often with CMD-R (Mac) to reflect
+  the modification.
+
+- Also you may need to abort and rerun "npm run dev" when you have syntax error in your code.
+
+- Also you may need to restart Chrome when something wrong.
+
+** Build for deployment on Chome
+
+   npm run build
+
+* Development
+
+** Define Protocol
+
+- Define protocol used for communication between the content script and the background script in src/shim.d.ts.
+
+  See https://serversideup.net/open-source/webext-bridge/docs/guide/type-safe-protocols
+
+** Constants
+
+- Import conf.ts
+
+  import * as conf from '../conf';
+
+- Use constants
+
+  fetch(conf.apiURL + '/v1/my_api')
+
+** UI components in src/resources
+
+- See each file in src/resources for usage.
+
+  import Button from '../resources/button.svelte';
+
+  <Button id="ponpon-done-button" label="Done" on:click={cancelSelectionMode}>
+  </Button>
+
+  <Button on:click={login} valiant="flat">
+  Sign in
+  </Button>
+
+* Caution
+
+- Since CSS conflists with page scripts, we cannot use component libraries such as  [Svelte Material UI](https://sveltematerialui.com/).

@@ -1,3 +1,10 @@
+/**
+     Banban Ponpon: Background script
+
+     @author Hirano Satoshi
+     @copyright 2024 Peace and Passion
+     @since 2024/10/10
+ */
 import browser from 'webextension-polyfill';
 import * as conf from './conf';
 import { sendMessage, onMessage } from 'webext-bridge/background';
@@ -7,7 +14,7 @@ import { sendMessage, onMessage } from 'webext-bridge/background';
 
 console.log('background script running...');
 
-onMessage('openTab', async ({ data }) => {
+onMessage('openPageOnTab', async ({ data }) => {
     // Define a Promise to wait for the tab to load completely
     let tabPromise = new Promise<browser.Tabs.Tab>((resolve) => {
         browser.tabs.onUpdated.addListener(function listener(_tabId, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, tab) {
@@ -28,7 +35,7 @@ onMessage('openTab', async ({ data }) => {
 
     // Send a message to the content script in the completed tab
     console.log(`Tab ${completedTab.id} is completed. Sending parse`);
-    const result = await sendMessage('parse', {}, 'content-script@' + completedTab.id);
+    const result = await sendMessage('parsePage', {}, 'content-script@' + completedTab.id);
 
     return result;
 });

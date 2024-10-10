@@ -20,12 +20,19 @@
  import Login from './login.svelte';
  import '../style.scss';                       // load our global CSS
 
- console.log('content.svelte started on page: ' + window.location.origin);
+ console.log('content.svelte started on page: ' + window.location.href);
 
  let isMain: boolean = true;                       // main script with the multi selectin button
 
- onMessage('parse', async () => {
-     console.log('parse: start');
+ /* Parse DOM and return title and price information.
+
+    Sender: Background script
+    Receiver: Content script
+
+    Return:  ParsePageResult.
+  */
+ onMessage('parsePage', async () => {
+     console.log('parsePage: start');
      const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
      window.close();
      return parsePageResult;
@@ -49,7 +56,7 @@
 
      const clickedURL: string = event.target.closest('a')?.href;
      if (clickedURL) {
-         const parsePageResult: ParsePageResult = await sendMessage('openTab', { url: clickedURL }, 'background');
+         const parsePageResult: ParsePageResult = await sendMessage('openPageOnTab', { url: clickedURL }, 'background');
 
          await sendParsePageResult(parsePageResult, clickedURL);
          console.log('linkClickHandler: end');
@@ -124,6 +131,8 @@
  // if request.land or dev server, stop showing the selection mode button
  if (window.location.origin == conf.originUri) {
      isMain = false;
+
+     // currently this does nothing
      if (window.location.pathname == 'login-proxy-view') {
          loginProxy();
      }
@@ -132,18 +141,22 @@
 </script>
 
 {#if isMain}
+  <!-- Start button -->
   <button id="ponpon-start-button" on:click={toggleSelectionMode}>
   </button>
 {/if}
 
 {#if isSelectionMode}
+  <!-- Done button -->
   <Button id="ponpon-done-button" label="Done"
           on:click={cancelSelectionMode}>
   </Button>
 
   {#if !conf.isProduction}
+    <!-- API URL -->
     <div id="ponpon-env-button" >{conf.apiURL}</div>
 
+    <!-- Get Access Token button -->
     <Button id="ponpon-at-button" on:click={getAccessToken} variant="outlined">
       Get Access Token
     </Button>
@@ -154,7 +167,6 @@
 <Login bind:this={loginComponent} />
 
 <style>
- @use './login.sccs';
  :global(#ponpon-start-button) {
    position: fixed;
    top: 50px;

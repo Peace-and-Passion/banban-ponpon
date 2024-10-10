@@ -1,5 +1,5 @@
 /**
-  Passkeys Authenticator for Banban Ponpon
+  Banban Ponpon: Passkey Authenticator
 
   @author Hirano Satoshi
   @copyright 2024 Peace and Passion
