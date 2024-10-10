@@ -64,7 +64,11 @@
 
 * Development
 
-** Define Protocol
+** Communication using [[https://serversideup.net/open-source/webext-bridge/][webext-bridge]], and defining protocol
+
+- [[https://serversideup.net/open-source/webext-bridge/][webext-bridge]] allow us to send and receive messages much easier than browser.runtime.sendMessage() and browser.tabs.sendMessage().
+
+- [[https://serversideup.net/browser-extension-messaging/][Tutorial]]
 
 - Define protocol used for communication between the content script and the background script in src/shim.d.ts.
 

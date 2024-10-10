@@ -1,6 +1,6 @@
 <!--
 
-     Banban Ponpon: Browser extension for Banban board
+     Banban Ponpon: The main entry point of browser extension for Banban board
 
      @author Hirano Satoshi, Togashi Ayuto
      @copyright 2024 Peace and Passion
@@ -36,7 +36,6 @@
  });
 
 
-
  let isMain: boolean                = true;       // main script with the multi selectin button
  let multiSelectButton: Button;
  let isSelectionMode: boolean       = false;
@@ -44,7 +43,7 @@
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
 
- // Toggles selection mode
+ /** Toggles selection mode */
  function toggleSelectionMode() {
      if (isSelectionMode) {
          cancelSelectionMode();
@@ -55,12 +54,14 @@
      }
  }
 
+ /** Cancel selection mode. */
  function cancelSelectionMode() {
      isSelectionMode = false;
 
      document.removeEventListener('click', linkClickHandler);
  }
 
+ /** Click handler for links to add titles, prices... */
  const linkClickHandler = async (event: ClickEvent) => {
      if (!isSelectionMode) return;
 
@@ -76,6 +77,7 @@
      }
  }
 
+ /** Send a parsed page result to a Banban Board. */
  async function sendParsePageResult(parsePageResult: ParsePageResult, url: string) {
      try {
          console.log('getAccessToken: start');
@@ -109,9 +111,7 @@
      }
  }
 
- /*
-    Get access token.
-  */
+ /* Get access token for test only. */
  async function getAccessToken() {
      try {
          const accessToken = await loginComponent.getAccessToken();
