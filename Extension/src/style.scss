@@ -47,6 +47,7 @@
     height: 170px;
     flex-direction: column;
     justify-content: flex-end; /* start from the bottom */
+    z-index: 64000;
     // border: 1px solid #ccc;
 }
 

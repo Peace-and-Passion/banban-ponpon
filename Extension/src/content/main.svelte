@@ -63,8 +63,8 @@
 
  /** Click handler for links to add titles, prices... */
  const linkClickHandler = async (event: ClickEvent) => {
-     // if (!isSelectionMode || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-     //
+     if (!isSelectionMode || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
      event.preventDefault();;
      event.stopPropagation();
 
