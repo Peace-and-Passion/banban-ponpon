@@ -3,13 +3,15 @@
 
      Usage: Give title and slot.
 
-     <Modal isOpen={open} title="Sign in" onClose={() => {open = false}}>
-       <div class="ponpon-center">
-          <Button id="ponpon-signin-button" on:click={login}>
-            Sign in
-          </Button>
-        </div>
-     </Modal>
+        import Modal from '../resources/Modal.svelte';
+
+        <Modal isOpen={open} title="Sign in" onClose={() => {open = false}}>
+          <div class="ponpon-center">
+             <Button id="ponpon-signin-button" on:click={login}>
+               Sign in
+             </Button>
+           </div>
+        </Modal>
 
      @author Hirano Satoshi
      @copyright 2024 Peace and Passion

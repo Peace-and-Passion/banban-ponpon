@@ -4,6 +4,7 @@ Toast: Show a message for a while. Repetitive messages are stacked properly.
   Usage:
 
    import Toast from '../resources/toast';
+
    Toast.show('message');
    Toast.error('error message');
 
