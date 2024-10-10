@@ -1,3 +1,10 @@
+** TODO [#A] Safariで動くか実験
+<2024-10-10 Thu>
+
+- Xcodeをインストール
+- XcodeでSafari/REPLACEME.xcodeprojを開く
+- macOS (Extension)をビルドして実行。やり方は検索して探して。
+
 ** TODO リンクを押したら、リンクのあたりに丸いハローを表示
 ** TODO multiSelectButtonをドラッグで移動するコードをponponに移植
 ** DONE Selection Modeになったら、画面上部にヘッダー・パネルを表示
