@@ -21,7 +21,6 @@
  export let id = '';
  export let isOpen = false; // モーダルのオープン状態を制御
  export let title = "Modal Title"; // モーダルのタイトル
- export let content = "Modal Content"; // モーダルの内容
  export let onClose = () => {}; // モーダルを閉じるための関数
 </script>
 
@@ -37,6 +36,7 @@
    align-items: center;
    justify-content: center;
    z-index: 1000;
+   border: none;
  }
 
  .modal {
@@ -47,6 +47,7 @@
    width: 300px;
    max-width: 90%;
    position: relative;
+   border: none;
  }
 
  .modal-header {
@@ -59,25 +60,19 @@
    display: flex;
    justify-content: flex-end;
  }
-
- .close-button {
-   color: lightblue;
-   border: none;
-   cursor: pointer;
- }
 </style>
 
 {#if isOpen}
-  <div id={id} class="modal-overlay" on:click={onClose}>
-    <div class="modal" on:click|stopPropagation>
+  <button id={id} class="modal-overlay" on:click={onClose}>
+    <button class="modal" on:click|stopPropagation>
       <div class="modal-header">{title}</div>
       <div class="modal-content">
         <slot></slot>
       </div>
 
       <div class="modal-footer">
-        <Button class="close-button" on:click={onClose} variant="flat" label="Close"></Button>
+        <Button on:click={onClose} variant="flat" label="Close"></Button>
       </div>
-    </div>
-  </div>
+    </button>
+  </button>
 {/if}

@@ -129,10 +129,6 @@
      }
  }
 
- // import backgrou.ts here though we don't use it, because 'input background.ts' does not work in vite.config.js.
- export let neverLoad = false;
-
- if (neverLoad) import('../background');
 </script>
 
 {#if isMain}

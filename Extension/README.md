@@ -27,8 +27,9 @@
 
   file:///Users/your_name/dev/banban-ponpon/Extension/blank.html
 
-- When you edit and save a file, Vite compiles it automatically. However, you need to reload the
-  blank.html often with CMD-R (Mac) to reflect the modification.
+- When you edit and save a file, Vite compiles it automatically and reload with Hot Module
+  Replacement (HMR). However, you need to reload the blank.html often with CMD-R (Mac) to reflect
+  the modification.
 
 - Also you may need to abort and rerun "npm run dev" when you have syntax error in your code.
 
@@ -51,12 +52,6 @@
 
   fetch(conf.apiURL + '/v1/my_api')
 
-## Dummy types for page_parser
-
-- Replace this with page_parser/types.ts when it is available.
-
-  types_dummy.ts
-
 ## To use components in [Svelte Material UI](https://sveltematerialui.com/)
 
 - Import components
@@ -66,15 +61,6 @@
   </script>
 
   <Card padded>A simple padded card.</Card>
-
-## background.ts
-
-- content.svelt imports backgrou.ts though we don't use it, because 'input background.ts' does
-  not work in vite.config.js. this is maybe @crxjs/vite-plugin depends on "vite": "^2.9.5" but
-  our vite is 4.5 and we need 'npm install --force'.
-
- export let neverLoad = false;
- if (neverLoad) import('../background');
 
 ## Firefox
 

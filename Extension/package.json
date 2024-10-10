@@ -18,7 +18,7 @@
   "license": "MIT",
   "type": "module",
   "devDependencies": {
-    "@crxjs/vite-plugin": "^1.0.14",
+    "@crxjs/vite-plugin": "^2.0.0-beta.25",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.0",
     "@types/webextension-polyfill": "^0.10.0",
@@ -46,8 +46,5 @@
     "svelte": "^4.0.5",
     "webext-bridge": "^6.0.1",
     "webextension-polyfill": "^0.10.0"
-  },
-  "overrides": {
-    "vite": "^5.4.8"
   }
 }

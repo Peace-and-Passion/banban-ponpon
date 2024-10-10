@@ -1,7 +1,6 @@
 import browser from 'webextension-polyfill';
 import * as conf from './conf';
 import { sendMessage, onMessage } from 'webext-bridge/background';
-import type { ParsePageResult } from './types_dummy';
 // export interface ParsePageResult {
 //      title: string;
 //  }
@@ -25,7 +24,7 @@ onMessage('openTab', async ({ data }) => {
     const tab = await browser.tabs.create({ url: data.url, active: false });
 
     // Wait for the tab to load completely
-    const completedTab = await tabPromise;
+    const completedTab: browser.Tabs.Tab = await tabPromise;
 
     // Send a message to the content script in the completed tab
     console.log(`Tab ${completedTab.id} is completed. Sending parse`);

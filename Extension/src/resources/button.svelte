@@ -28,7 +28,7 @@
    padding: 10px 24px;
    font-size: 16px;
    font-weight: 500;
-   text-transform: uppercase;
+   /* text-transform: uppercase; */
    cursor: pointer;
    overflow: hidden;
    transition: box-shadow 0.2s;
@@ -53,7 +53,7 @@
 
  .outlined {
    background-color: transparent;
-   border: 2px solid #e0e0e0;
+   border: 1px solid #e0e0e0;
  }
 
  .outlined:active {

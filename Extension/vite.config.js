@@ -13,30 +13,29 @@ export default defineConfig(({ mode }) => {
         build: {
             emptyOutDir: true,
             outDir: 'dist',
-            sourcemap: true,
-            rollupOptions: {
-                input: {
-                    content: './src/content.ts',
-                    background: './src/background.ts',
-                    // popup: './src/popup/popup.ts',
-                    // settings: './src/settings/settings.ts'
-                },
-                output: {
-                    entryFileNames: '[name].js', // 出力ファイル名を指定
-                    chunkFileNames: 'assets/chunk-[hash].js',
-                },
-            },
+            sourcemap: mode === 'production' ? false: 'inline',
+            // we don't need rollupOptions here
         },
         plugins: [
             crx({ manifest }),
             svelte({
                 compilerOptions: {
                     dev: !production,
-                    sourcemap: true,
                 },
                 preprocess: sveltePreprocess(),
             }),
         ],
+        css: {
+            // this stops deprecation warning
+            preprocessorOptions: {
+                scss: {
+                    api: "modern-compiler",
+                },
+                sass: {
+                    api: "modern-compiler",
+                },
+            },
+        },
         resolve: {
             alias: {
                 '@': path.resolve(__dirname, 'src'),
