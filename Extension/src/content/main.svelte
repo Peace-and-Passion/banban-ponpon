@@ -63,9 +63,9 @@
 
  /** Click handler for links to add titles, prices... */
  const linkClickHandler = async (event: ClickEvent) => {
-     if (!isSelectionMode) return;
-
-     event.preventDefault();
+     // if (!isSelectionMode || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+     //
+     event.preventDefault();;
      event.stopPropagation();
 
      const clickedURL: string = event.target.closest('a')?.href;
@@ -162,74 +162,93 @@
 
 {#if isSelectionMode}
   <!-- Header -->
-  <div class="header">
-    <h3>{$_('title')}</h3>
-  </div>
+  <div class="ponpon-header">
+    <!-- Done button -->
+    <button on:click={cancelSelectionMode} class="ponpon-close-button">
+      <span class="material-symbols-outlined">
+        close
+      </span>
+    </button>
 
-  <!-- Done button -->
-  <Button id="ponpon-done-button" label="Done"
-          on:click={cancelSelectionMode}>
-  </Button>
-
-  {#if !conf.isProduction}
-    <!-- API URL -->
-    <div id="ponpon-env-button" >{conf.apiURL}</div>
+    <div class="ponpon-title">
+      <img class="ponpon-logo" src="https://cdn.request.land/img/Requestland-icon.svg"alt="">
+      {$_('title')}
+    </div>
+    <div class="ponpon-tap">{$_('tap')}</div>
 
     <!-- Get Access Token button -->
-    <Button id="ponpon-at-button" on:click={getAccessToken} variant="outlined">
-      Get Access Token
+    <Button on:click={getAccessToken} small="true" variant="flat">
+      AT
     </Button>
-  {/if}
+    <!-- <button on:click={getAccessToken} class="ponpon-button ponpon-smallsmall-text">
+         AT
+         </button>
+    -->
+    {#if !conf.isProduction}
+      <!-- API URL -->
+      <!-- <div class="ponpon-small-text">{conf.apiURL}</div>
+      -->
+    {/if}
+  </div>
+
 {/if}
 
 
 <Login bind:this={loginComponent} />
 
 <style>
- .header {
+ .ponpon-header {
    position: fixed;
-   width: 100px;
+   width: 300px;
+   font-size: 14px;
    top: 4px;
    left: 50%;
    transform: translateX(-50%);
+   padding: 10px 16px;
+   border-radius: 6px;
+   background-color: #f0f0f0e0;
+   color: black;
+   z-index: 60000;
+ }
+ .ponpon-header .ponpon-close-button {
+   position: absolute;
+   top: 4px;
+   right: 4px;
+   border: none;
+   cursor: pointer;
+ }
+ .ponpon-header .ponpon-title {
+   font-size: 140%;
+   /* font-weight: 600; */
+   text-align: center;
+   margin-bottom: 8px;;
+ }
+ .ponpon-header img.ponpon-logo {
+   position: absolute;
+   top: 8px;
+   left: 24px;
+   width: 38px;
+ }
+ .ponpon-header .ponpon-tap {
+   font-size: 80%;
+   line-height: 17px;
  }
  :global(#ponpon-start-button) {
    position: fixed;
-   top: 50px;
-   left: 0;
-   width: 20px;
+   bottom: 70px;
+   right: 0;
+   width: 17px;
    height: 30px;
-   border-radius: 0 50px 50px 0;
+   border-radius: 50px 0 0 50px;;
    overflow: hidden;
    padding: 0;
    border: none;
-   background-color: red;
-   z-index: 10000;
+   background-color: #6AD8F0;
+   z-index: 60000;
    cursor: pointer;
  }
-
- :global(#ponpon-done-button) {
-   position: fixed;
-   top: 78px;
-   left: 18px;
-   z-index: 10000;
- }
- :global(#ponpon-at-button) {
-   position: fixed;
-   top: 176px;
-   left: 18px;
-   z-index: 10000;
-   background-color: white;
- }
- :global(#ponpon-env-button) {
-   position: fixed;
-   top: 56px;
-   left: 26px;
-   z-index: 10000;
-   /* padding: 6px 1rem; */
-   /* border: 1px solid #e0e0e0;
-      border-radius: 6px; */
-   /* background-color: white; */
-   font-size: 7px;
+ button {
+   border:none;
+   cursor: pointer;
  }
 </style>

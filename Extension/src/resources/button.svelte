@@ -22,6 +22,7 @@
 <script lang="ts">
  export let label = ''; // button label but slot is also effective
  export let id = "";
+ export let small = false;
  export let variant: 'flat'|'raised'|'outlined' = 'raised'; // button style
 </script>
 
@@ -62,9 +63,10 @@
  .outlined:active {
    box-shadow: none;
  }
+
 </style>
 
-<button class="button {variant}" id={id} on:click>
+<button class="button {variant} {small ? 'ponpon-small-text' : ''}" id={id} on:click>
   {label}
   <slot></slot>
 </button>

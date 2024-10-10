@@ -12,6 +12,11 @@
    npm install
    npm run dev
 
+- When you edit and save a file, Vite compiles it automatically and reload with Hot Module
+  Replacement (HMR).
+- You will need to repeat editing and saving twice to reflect your modification.
+- You will need to abort "npm run dev" and rerun when modify locale files.
+
 ** Locally run on Chrome for deployed hm-server but not production build
 
    npm run prod
@@ -50,13 +55,7 @@
 
   file:///Users/your_name/dev/banban-ponpon/Extension/blank.html
 
-- When you edit and save a file, Vite compiles it automatically and reload with Hot Module
-  Replacement (HMR). However, you need to reload the blank.html often with CMD-R (Mac) to reflect
-  the modification.
-
-- Also you may need to abort and rerun "npm run dev" when you have syntax error in your code.
-
-- Also you may need to restart Chrome when something wrong.
+- Ponpon recognizes the file and shows the buttons without pressing the start button.
 
 ** Build for deployment on Chome
 

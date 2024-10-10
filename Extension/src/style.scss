@@ -5,7 +5,11 @@
   @copyright 2024 Peace and Passion
   @since 2024/10/02
 
- */
+*/
+.ponpon-valign-wrapper {
+   display: flex;
+   align-items: center;
+}
 .ponpon-small-vspace {
   height: 1em !important;
 }
@@ -20,6 +24,18 @@
 
 .ponpon-center {
     text-align: center;
+}
+.ponpon-small-text {
+    font-size: 85% !important;
+}
+
+.ponpon-smallsmall-text {
+    font-size: 70% !important;
+}
+
+.ponpon-large-text {
+    font-size: 110% !important;
+    /* font-weight: 300; */
 }
 
 #ponpon-toast-container {
