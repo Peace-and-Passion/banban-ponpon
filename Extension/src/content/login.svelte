@@ -27,7 +27,7 @@
     Gets an access token from any of running Requestland in tabs, or open Login dialog.
   */
  export async function getAccessToken(): string {
-     const accessToken: string = await sendMessage('getAccessTokenFromBackground', {}, 'background');
+     const accessToken: string|null = await sendMessage('getAccessTokenFromBackground', {}, 'background');
      if (accessToken) {
          console.log('Access Token found:', accessToken);
          return accessToken;
@@ -38,7 +38,7 @@
  }
 
  /**
-
+    Login. NOT USED.
   */
  async function login(): string {
      const accessToken = await passkey.authenticate({land_id_or_userID: undefined});
@@ -50,9 +50,13 @@
 
  /**
     Event handler for get accessToken from context script.
-
     Ask hm-app to set access token to DOM as <meta name="accessToken" description="alskjf09b8_flasj098bsf">.
     We detect the modification using MutationObserver and return it to the background script.
+
+    Sender: Background script
+    Receiver: Content script
+
+    Return:  Access token.
   */
  onMessage('getAccessTokenFromContextScript', async () => {
      console.log('received getAccessTokenFromContextScript');

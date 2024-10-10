@@ -30,7 +30,7 @@ declare module "webext-bridge" {
 
            Return:  Access token.
          */
-        getAccessTokenFromBackground: ProtocolWithReturn<{ }, string>;
+        getAccessTokenFromBackground: ProtocolWithReturn<{ }, string|null>;
 
         /* Get Access Token from context script.
 
@@ -39,6 +39,6 @@ declare module "webext-bridge" {
 
            Return:  Access token.
          */
-        getAccessTokenFromContextScript: ProtocolWithReturn<{ }, string>;
+        getAccessTokenFromContextScript: ProtocolWithReturn<{ }, string|null>;
     }
 }

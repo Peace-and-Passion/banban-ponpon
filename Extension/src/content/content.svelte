@@ -22,46 +22,12 @@
 
  console.log('content.svelte started on page: ' + window.location.href);
 
- let isMain: boolean = true;                       // main script with the multi selectin button
-
- /* Parse DOM and return title and price information.
-
-    Sender: Background script
-    Receiver: Content script
-
-    Return:  ParsePageResult.
-  */
- onMessage('parsePage', async () => {
-     console.log('parsePage: start');
-     const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
-     window.close();
-     return parsePageResult;
- });
-
- //
- // script for the selection mode button
- //
-
- let multiSelectButton;
+ let isMain: boolean                = true;       // main script with the multi selectin button
+ let multiSelectButton: Button;
  let isSelectionMode: boolean       = false;
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
-
- const linkClickHandler = async (event: ClickEvent) => {
-     if (!isSelectionMode) return;
-
-     event.preventDefault();
-     event.stopPropagation();
-
-     const clickedURL: string = event.target.closest('a')?.href;
-     if (clickedURL) {
-         const parsePageResult: ParsePageResult = await sendMessage('openPageOnTab', { url: clickedURL }, 'background');
-
-         await sendParsePageResult(parsePageResult, clickedURL);
-         console.log('linkClickHandler: end');
-     }
- }
 
  // Toggles selection mode
  function toggleSelectionMode() {
@@ -78,6 +44,21 @@
      isSelectionMode = false;
 
      document.removeEventListener('click', linkClickHandler);
+ }
+
+ const linkClickHandler = async (event: ClickEvent) => {
+     if (!isSelectionMode) return;
+
+     event.preventDefault();
+     event.stopPropagation();
+
+     const clickedURL: string = event.target.closest('a')?.href;
+     if (clickedURL) {
+         const parsePageResult: ParsePageResult = await sendMessage('openPageOnTab', { url: clickedURL }, 'background');
+
+         await sendParsePageResult(parsePageResult, clickedURL);
+         console.log('linkClickHandler: end');
+     }
  }
 
  async function sendParsePageResult(parsePageResult: ParsePageResult, url: string) {
@@ -101,7 +82,7 @@
              // 	     })
          });
 	 if (response.ok) {
-             if (!conf.isProduction) Toast.show('putCard: ' + parsePageResult.title || 'OK');
+             Toast.show('Added: ' + parsePageResult.title || 'OK');
          } else {
              const errorMsg = await response.text();
              if (!conf.isProduction) Toast.show('putCard: ' + errorMsg);
@@ -113,6 +94,9 @@
      }
  }
 
+ /*
+    Get access token.
+  */
  async function getAccessToken() {
      try {
          const accessToken = await loginComponent.getAccessToken();
@@ -122,6 +106,20 @@
 	 console.log("getAccessToken: fetch() error: "+ error.toString());
      }
  }
+
+ /* Parse DOM and return title and price information.
+
+    Sender: Background script
+    Receiver: Content script
+
+    Return:  ParsePageResult.
+  */
+ onMessage('parsePage', async () => {
+     console.log('parsePage: start');
+     const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
+     window.close();
+     return parsePageResult;
+ });
 
  // enable selection mode if blank.html
  if (window.location.pathname.endsWith('blank.html')) {
