@@ -7,14 +7,17 @@
   @since 2024/10/02
  */
 
-import App from './content/content.svelte';
+import Main from './content/main.svelte';
 
-//console.log('content.ts: start');
+// load icons
+// <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close" />
+const link = document.createElement("link");
+link.rel = "stylesheet";
+link.href = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close";
+document.head.appendChild(link);
 
 // load content.svelte
 let targetElement = document.createElement('div');
 targetElement.id = 'content-script-root';
 document.body.appendChild(targetElement);
-new App({ target: targetElement });
-
-//console.log('content.ts: new App() end');
+new Main({ target: targetElement });

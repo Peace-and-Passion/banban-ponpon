@@ -1,14 +1,25 @@
+/**
+     Banban Ponpon: Background script
+
+     @author Hirano Satoshi
+     @copyright 2024 Peace and Passion
+     @since 2024/10/10
+ */
 import browser from 'webextension-polyfill';
-import * as conf from './conf';
 import { sendMessage, onMessage } from 'webext-bridge/background';
-import type { ParsePageResult } from './types_dummy';
-// export interface ParsePageResult {
-//      title: string;
-//  }
+import * as conf from './conf';
 
 console.log('background script running...');
 
-onMessage('openTab', async ({ data }) => {
+/* Open a page on a tab to get its title and price information.
+
+   Sender: Content script
+   Receiver: Background script
+
+   Param:   url A URL to open.
+   Return:  ParsePageResult.
+ */
+onMessage('openPageOnTab', async ({ data }) => {
     // Define a Promise to wait for the tab to load completely
     let tabPromise = new Promise<browser.Tabs.Tab>((resolve) => {
         browser.tabs.onUpdated.addListener(function listener(_tabId, changeInfo: browser.Tabs.OnUpdatedChangeInfoType, tab) {
@@ -25,21 +36,26 @@ onMessage('openTab', async ({ data }) => {
     const tab = await browser.tabs.create({ url: data.url, active: false });
 
     // Wait for the tab to load completely
-    const completedTab = await tabPromise;
+    const completedTab: browser.Tabs.Tab = await tabPromise;
 
     // Send a message to the content script in the completed tab
     console.log(`Tab ${completedTab.id} is completed. Sending parse`);
-    const result = await sendMessage('parse', {}, 'content-script@' + completedTab.id);
+    const result = await sendMessage('parsePage', {}, 'content-script@' + completedTab.id);
 
     return result;
 });
 
 /**
-    Gets an access token from any of running Requestland in tabs.
+ Gets an access token from any of running Requestland in tabs.
+
+ Sender: Content script
+ Receiver: Background script
+
+ Return:  Access token.
   */
 onMessage('getAccessTokenFromBackground', getAccessTokenFromTab);
 
-export async function getAccessTokenFromTab() {
+export async function getAccessTokenFromTab(): Promise<string|null> {
     const tabs = await browser.tabs.query({ url: conf.originUri + '/*' });
     const promises = [];
 
@@ -61,7 +77,8 @@ export async function getAccessTokenFromTab() {
 
     const responses = await Promise.all(promises);
     console.log('getAccessTokenFromBackground: Promise.all end');
-    const accessToken = responses.find(token => token !== null);
+    let accessToken: string|null|undefined = responses.find(token => token !== null);
+    if (accessToken == undefined) accessToken = null;
 
     return accessToken;
 }

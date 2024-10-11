@@ -5,15 +5,11 @@
   @copyright 2024 Peace and Passion
   @since 2024/10/02
 
- */
-@use '@material/button/mixins' as mdc-button;
-
-// XXX round does not work. 'border-radius: 36px' does not change the shape of hover
-.ponpon-button-shaped-round {
-    @include mdc-button.shape-radius(100%);
-    // border-radius: 36px !important;
+*/
+.ponpon-valign-wrapper {
+   display: flex;
+   align-items: center;
 }
-
 .ponpon-small-vspace {
   height: 1em !important;
 }
@@ -28,4 +24,52 @@
 
 .ponpon-center {
     text-align: center;
+}
+.ponpon-small-text {
+    font-size: 85% !important;
+}
+
+.ponpon-smallsmall-text {
+    font-size: 70% !important;
+}
+
+.ponpon-large-text {
+    font-size: 110% !important;
+    /* font-weight: 300; */
+}
+
+#ponpon-toast-container {
+    display: flex;
+    position: fixed;
+    top: 10;
+    right:    30px;
+    width: 240px;
+    height: 170px;
+    flex-direction: column;
+    justify-content: flex-end; /* start from the bottom */
+    z-index: 64000;
+    // border: 1px solid #ccc;
+}
+
+.ponpon-toast {
+    background-color: lightblue; /* Default color */
+    width:    210px;
+    color:    white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 1rem;
+    margin-top: 4px;
+    padding:  0.6rem 1rem;
+    border-radius: 6px;
+    word-break: break-all;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity:  1;
+    transform: translateY(0);
+}
+
+.ponpon-default-toast {
+    background-color: deepskyblue; /* Default color */
+}
+
+.ponpon-error-toast {
+    background-color: red; /* Error color */
 }

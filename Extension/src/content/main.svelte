@@ -1,0 +1,254 @@
+<!--
+
+     Banban Ponpon: The main entry point of browser extension for Banban board
+
+     @author Hirano Satoshi, Togashi Ayuto
+     @copyright 2024 Peace and Passion
+     @since 2024/10/02
+-->
+
+<script lang="ts">
+ import browser from 'webextension-polyfill';
+ import { sendMessage, onMessage } from 'webext-bridge/content-script';
+ import { _, locale, init, addMessages, getLocaleFromNavigator } from 'svelte-i18n';
+
+ import Button from '../resources/button.svelte';
+ import Modal from '../resources/Modal.svelte';
+ import Toast from '../resources/toast';
+ import { parseResponse } from './page_parser/parser/response-parser';
+ import { ParsePageResult } from './page_parser/types';
+ import * as conf from '../conf';
+ import { loginProxy } from './login-proxy';
+ import Login from './login.svelte';
+ import '../style.scss';                       // load our global CSS
+
+ console.log('content.svelte started on page: ' + window.location.href);
+
+ // initialize locales
+ import en from '../../locales/en.json';
+ import ja from '../../locales/ja.json';
+ addMessages('en', en);
+ addMessages('ja', ja);
+ // add new locale here
+ init({
+     fallbackLocale: 'en',
+     initialLocale: getLocaleFromNavigator().split('-')[0]?.toLowerCase()
+ });
+
+
+ let isMain: boolean                = true;       // main script with the multi selectin button
+ let multiSelectButton: Button;
+ let isSelectionMode: boolean       = false;
+ let buttonYPosition: number        = 50;
+ let initialButtonYPosition: number = 50;
+ let loginComponent;                              // Login component bound by <Login>
+
+ /** Toggles selection mode */
+ function toggleSelectionMode() {
+     if (isSelectionMode) {
+         cancelSelectionMode();
+     } else {
+         isSelectionMode = true;
+
+         document.addEventListener('click', linkClickHandler);
+     }
+ }
+
+ /** Cancel selection mode. */
+ function cancelSelectionMode() {
+     isSelectionMode = false;
+
+     document.removeEventListener('click', linkClickHandler);
+ }
+
+ /** Click handler for links to add titles, prices... */
+ const linkClickHandler = async (event: ClickEvent) => {
+     if (!isSelectionMode || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+     event.preventDefault();;
+     event.stopPropagation();
+
+     const clickedURL: string = event.target.closest('a')?.href;
+     if (clickedURL) {
+         const parsePageResult: ParsePageResult = await sendMessage('openPageOnTab', { url: clickedURL }, 'background');
+
+         await sendParsePageResult(parsePageResult, clickedURL);
+         console.log('linkClickHandler: end');
+     }
+ }
+
+ /** Send a parsed page result to a Banban Board. */
+ async function sendParsePageResult(parsePageResult: ParsePageResult, url: string) {
+     try {
+         console.log('getAccessToken: start');
+         const accessToken = await loginComponent.getAccessToken();
+         console.log('getAccessToken: end');
+
+         console.log('sendParsePageResult: start');
+	 const response = await fetch(conf.apiURL + "/v1/putCardExt", {
+	     method : "POST",
+	     headers : {'Content-type' : 'application/x-www-form-urlencoded'},
+             body: new URLSearchParams({
+                 token: accessToken || '',
+                 parse_page_results: JSON.stringify([parsePageResult]),
+             }).toString()
+	     // body : JSON.stringify({
+             //     token: accessToken,
+             //     parse_page_results: JSON.stringify(parsePageResult),
+             //     url: JSON.stringify(url)
+             // 	     })
+         });
+	 if (response.ok) {
+             Toast.show('Added: ' + parsePageResult.title || 'OK');
+         } else {
+             const errorMsg = await response.text();
+             if (!conf.isProduction) Toast.show('putCard: ' + errorMsg);
+	     throw new Error("Connection error for " + conf.apiURL + ': ' + errorMsg);
+	 }
+     } catch (error) {
+         if (!conf.isProduction)  Toast.show('putCard: ' + error.toString());
+	 console.log("sendParsePageResult: fetch() error: "+ error.toString());
+     }
+ }
+
+ /* Get access token for test only. */
+ async function getAccessToken() {
+     try {
+         const accessToken = await loginComponent.getAccessToken();
+         Toast.show('getAccessToken test: ' + accessToken);
+     } catch (error) {
+         Toast.show('putCard: ' + error.toString());
+	 console.log("getAccessToken: fetch() error: "+ error.toString());
+     }
+ }
+
+ /* Parse DOM and return title and price information.
+
+    Sender: Background script
+    Receiver: Content script
+
+    Return:  ParsePageResult.
+  */
+ onMessage('parsePage', async () => {
+     console.log('parsePage: start');
+     const parsePageResult: ParsePageResult = await parseResponse(document, document.URL);
+     window.close();
+     return parsePageResult;
+ });
+
+ // enable selection mode if blank.html
+ if (window.location.pathname.endsWith('blank.html')) {
+     toggleSelectionMode();
+ }
+
+ // if request.land or dev server, stop showing the selection mode button
+ if (window.location.origin == conf.originUri) {
+     isMain = false;
+
+     // currently this does nothing
+     if (window.location.pathname == 'login-proxy-view') {
+         loginProxy();
+     }
+ }
+
+</script>
+
+{#if isMain}
+  <!-- Start button -->
+  <button id="ponpon-start-button" on:click={toggleSelectionMode}>
+  </button>
+{/if}
+
+
+{#if isSelectionMode}
+  <!-- Header -->
+  <div class="ponpon-header">
+    <!-- Done button -->
+    <button on:click={cancelSelectionMode} class="ponpon-close-button">
+      <span class="material-symbols-outlined">
+        close
+      </span>
+    </button>
+
+    <div class="ponpon-title">
+      <img class="ponpon-logo" src="https://cdn.request.land/img/Requestland-icon.svg"alt="">
+      {$_('title')}
+    </div>
+    <div class="ponpon-tap">{$_('tap')}</div>
+
+    <!-- Get Access Token button -->
+    <Button on:click={getAccessToken} small="true" variant="flat">
+      AT
+    </Button>
+    <!-- <button on:click={getAccessToken} class="ponpon-button ponpon-smallsmall-text">
+         AT
+         </button>
+    -->
+    {#if !conf.isProduction}
+      <!-- API URL -->
+      <!-- <div class="ponpon-small-text">{conf.apiURL}</div>
+      -->
+    {/if}
+  </div>
+
+{/if}
+
+
+<Login bind:this={loginComponent} />
+
+<style>
+ .ponpon-header {
+   position: fixed;
+   width: 300px;
+   font-size: 14px;
+   top: 4px;
+   left: 50%;
+   transform: translateX(-50%);
+   padding: 10px 16px;
+   border-radius: 6px;
+   background-color: #f0f0f0e0;
+   color: black;
+   z-index: 60000;
+ }
+ .ponpon-header .ponpon-close-button {
+   position: absolute;
+   top: 4px;
+   right: 4px;
+   border: none;
+   cursor: pointer;
+ }
+ .ponpon-header .ponpon-title {
+   font-size: 140%;
+   /* font-weight: 600; */
+   text-align: center;
+   margin-bottom: 8px;;
+ }
+ .ponpon-header img.ponpon-logo {
+   position: absolute;
+   top: 8px;
+   left: 24px;
+   width: 38px;
+ }
+ .ponpon-header .ponpon-tap {
+   font-size: 80%;
+   line-height: 17px;
+ }
+ :global(#ponpon-start-button) {
+   position: fixed;
+   bottom: 70px;
+   right: 0;
+   width: 17px;
+   height: 30px;
+   border-radius: 50px 0 0 50px;;
+   overflow: hidden;
+   padding: 0;
+   border: none;
+   background-color: #6AD8F0;
+   z-index: 60000;
+   cursor: pointer;
+ }
+ button {
+   border:none;
+   cursor: pointer;
+ }
+</style>
