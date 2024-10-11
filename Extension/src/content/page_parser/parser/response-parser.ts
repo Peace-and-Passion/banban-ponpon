@@ -55,10 +55,13 @@ export async function parseResponse(
 
   const urlObj = new URL(url);
     if (isAmazonDomain(urlObj.hostname)) {
-        return parseAmazonPage(url)
+        const result = parseAmazonPage(url);
+        result.url = url;
+        return result;
     }
 
-  const parsePageResult: ParsePageResult = baseParsePageResult || new ParsePageResult();
+    const parsePageResult: ParsePageResult = baseParsePageResult || new ParsePageResult();
+    parsePageResult.url = url;
 
   // 1. document オブジェクトからデータを取得・解析
   console.debug("Benchmark: start parsing", new Date().toISOString());

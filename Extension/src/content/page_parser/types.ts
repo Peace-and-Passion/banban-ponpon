@@ -26,6 +26,7 @@ export class ParsePageResult {
     shopPrices: ShopPrice[]|undefined;
     siteName: string|undefined;
     blocked: boolean|undefined;  // fetch server is blocked.
+    url: string|undefined;
 
     constructor(
         title?: string,
