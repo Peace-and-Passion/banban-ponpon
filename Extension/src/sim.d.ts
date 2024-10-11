@@ -31,22 +31,22 @@ declare module "webext-bridge" {
          */
         parsePage: ProtocolWithReturn<{ }, ParsePageResult>;
 
-        /* Get Access Token from background script.
+        /* Get UserInfo including access token from background script.
 
            Sender: Content script
            Receiver: Background script
 
-           Return:  Access token.
+           Return:  UserInfo.
          */
         getAccessTokenFromBackground: ProtocolWithReturn<{ }, UserInfo>;
 
-        /* Get Access Token from context script.
+        /* Get UserInfo including access token from context script.
 
            Sender: Background script
            Receiver: Content script
 
-           Return:  Access token.
+           Return:  UserInfo.
          */
-        getAccessTokenFromContextScript: ProtocolWithReturn<{ }, UserInfo>;
+        getUserInfo: ProtocolWithReturn<{ }, UserInfo>;
     }
 }

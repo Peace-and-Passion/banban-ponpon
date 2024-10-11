@@ -11,15 +11,15 @@
    align-items: center;
 }
 .ponpon-small-vspace {
-  height: 1em !important;
+  height: 14px !important;
 }
 
 .ponpon-vspace {
-  height: 1.6em !important;
+  height: 20px !important;
 }
 
 .ponpon-large-vspace {
-  height: 3em !important;
+  height: 36px !important;
 }
 
 .ponpon-center {
@@ -56,9 +56,9 @@
     width:    210px;
     color:    white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    font-size: 1rem;
+    font-size: 12px;
     margin-top: 4px;
-    padding:  0.6rem 1rem;
+    padding:  10px 18px;
     border-radius: 6px;
     word-break: break-all;
     transition: opacity 0.5s ease, transform 0.5s ease;

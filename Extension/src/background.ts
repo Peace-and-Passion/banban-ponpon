@@ -63,8 +63,8 @@ export async function getAccessTokenFromTab(): Promise<string|null> {
     for (const tab of tabs) {
         const promise = (async () => {
             try {
-                console.log('getAccessTokenFromBackground: sending getAccessTokenFromContextScript to ' + tab.id)
-                const userInfo: UserInfo|null = await sendMessage('getAccessTokenFromContextScript', {}, 'content-script@' + tab.id);
+                console.log('getAccessTokenFromBackground: sending getUserInfo to ' + tab.id)
+                const userInfo: UserInfo|null = <UserInfo|null>await sendMessage('getUserInfo', {}, 'content-script@' + tab.id);
                 if (userInfo) {
                     console.log(`getAccessTokenFromBackground: got AT ${userInfo.at} from tab ${tab.id}`);
                 } else {

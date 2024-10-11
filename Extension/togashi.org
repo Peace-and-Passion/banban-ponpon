@@ -1,9 +1,19 @@
 ** TODO [#A] Safariで動くか実験
 <2024-10-10 Thu>
 
-- Xcodeをインストール
-- XcodeでSafari/REPLACEME.xcodeprojを開く
-- macOS (Extension)をビルドして実行。やり方は検索して探して。
+- [ ] 準備
+  - Xcodeをインストール
+  - XcodeでSafari/REPLACEME.xcodeprojを開く
+
+- [ ] macOS (Extension)をビルドして実行。やり方は検索して探して。
+- [ ] iOSエミュレーターで実験
+- [ ] iOS実機
+
+** TODO Firefoxで動くか実験
+
+- [ ] macOS
+- [ ] Androidエミュレーター
+- [ ] Android実機
 
 ** TODO リンクを押したら、リンクのあたりに丸いハローを表示
 ** TODO multiSelectButtonをドラッグで移動するコードをponponに移植
@@ -13,18 +23,18 @@
 - [X] ヘッダーパネルを表示する
 - [X] 閉じるボタンを表示する
 - [X] テスト用のアクセストークンボタンをつける
-- [ ] Land IDを表示する (平野)
+- [X] Land IDを表示する (平野)
 
-** DOING カードを追加したらToastを表示
+** DONE カードを追加したらToastを表示
 <2024-10-10 Thu>
 
-- [ ] Toastが出ないことがある
+- [X] Toastが出ないことがある
 
 ** TODO ヘッダー・パネルを動かせるようにする
 <2024-10-10 Thu>
 
 
-** TODO 「現在のページをボードに追加」ボタンを動かす
+** TODO 「現在のページをボードに追加」ボタンを実装
 
 ** TODO リンクを長押しした時はページを開く
 <2024-10-10 Thu>

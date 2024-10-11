@@ -9,7 +9,7 @@
 
 <script lang="ts">
  import browser from 'webextension-polyfill';
- import { writable } from 'svelte/store';
+// import { writable } from 'svelte/store';
  import Modal from '../resources/Modal.svelte';
  import * as conf from '../conf';
  import Button from '../resources/button.svelte';
@@ -19,8 +19,8 @@
  import type { UserInfo, UserInfoInquiry } from '../types';
 
  let open     = false;                // Modal open flat
- export let userInfo = writable('');  // ローカルのストアとして userInfo をエクスポート
-// export let userInfo: UserInfo;       // User info
+ //export let userInfo = writable('');  // ローカルのストアとして userInfo をエクスポート
+ export let userInfo: UserInfo;       // User info
  const passkey = new Passkey();       // Passkey authenticator
 
  export function openLoginModal() {
@@ -33,7 +33,8 @@
  export async function getAccessToken(): string {
      const _userInfo: UserInfo|null = await sendMessage('getAccessTokenFromBackground', {}, 'background');
      if (_userInfo) {
-         userInfo.set(_userInfo);
+         userInfo = _userInfo;
+         //userInfo.set(_userInfo);
          console.log('Access Token found:', userInfo.at);
          return userInfo.at;
      } else {
@@ -63,8 +64,8 @@
 
     Return:  Access token.
   */
- onMessage('getAccessTokenFromContextScript', async () => {
-     console.log('received getAccessTokenFromContextScript');
+ onMessage('getUserInfo', async () => {
+     console.log('received getUserInfo');
 
      // ask hm-app to send AT or null
      return new Promise<void>(async (resolve, reject) => {
@@ -77,7 +78,7 @@
              resolve(userInfo === 'null' ? null : userInfo);
          }
          document.addEventListener(returnEvent, returnEventHandler);
-         const userInfoInquiry: UserInfoInquiry = {type: 'getAccessTokenFromPageScript', returnEvent: returnEvent };
+         const userInfoInquiry: UserInfoInquiry = {type: 'getUserInfo', returnEvent: returnEvent };
          window.postMessage(userInfoInquiry, conf.originUri);
      });
  });

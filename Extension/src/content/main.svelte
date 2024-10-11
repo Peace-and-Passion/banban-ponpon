@@ -21,6 +21,7 @@
  import { loginProxy } from './login-proxy';
  import Login from './login.svelte';
  import '../style.scss';                       // load our global CSS
+ import type { UserInfo } from '../types';
 
  console.log('content.svelte started on page: ' + window.location.href);
 
@@ -42,6 +43,7 @@
  let buttonYPosition: number        = 50;
  let initialButtonYPosition: number = 50;
  let loginComponent;                              // Login component bound by <Login>
+ let userInfo: UserInfo;
 
  /** Toggles selection mode */
  function toggleSelectionMode() {
@@ -174,9 +176,11 @@
       <img class="ponpon-logo" src="https://cdn.request.land/img/Requestland-icon.svg"alt="">
       {$_('title')}
     </div>
-    <div class="ponpon-tap">{$_('tap')}</div>
+    <div class="ponpon-desc">{$_('tap')}</div>
 
-      <div>{$loginComponent?.userInfo?.land_id}</div>
+    {#if userInfo?.land_id}
+      <div class="ponpon-land-id">{userInfo?.land_id}</div>
+    {/if}
 
     <!-- Get Access Token button -->
     <Button on:click={getAccessToken} small="true" variant="flat">
@@ -196,7 +200,7 @@
 {/if}
 
 
-<Login bind:this={loginComponent} />
+<Login bind:this={loginComponent} bind:userInfo />
 
 <style>
  .ponpon-header {
@@ -223,7 +227,7 @@
    font-size: 140%;
    /* font-weight: 600; */
    text-align: center;
-   margin-bottom: 8px;;
+   margin-bottom: 14px;
  }
  .ponpon-header img.ponpon-logo {
    position: absolute;
@@ -231,15 +235,19 @@
    left: 24px;
    width: 38px;
  }
- .ponpon-header .ponpon-tap {
+ .ponpon-header .ponpon-desc {
    font-size: 80%;
    line-height: 17px;
+   margin-bottom: 14px;
+ }
+ .ponpon-header .ponpon-land-id {
+   font-size: 80%;
  }
  :global(#ponpon-start-button) {
    position: fixed;
    bottom: 70px;
    right: 0;
-   width: 17px;
+   width: 20px;
    height: 30px;
    border-radius: 50px 0 0 50px;;
    overflow: hidden;

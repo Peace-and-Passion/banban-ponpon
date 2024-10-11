@@ -1,40 +1,27 @@
+** DONE Svelte                                                   :ext:ponpon:
+<2024-10-08 Tue>
+
+- [X] Svelte Material UIを独自のボタンに置き換える
+  - ページスクリプトのCSSが変わってしまうため
+  - [X] button
+  - [X] toast
+  - [X] modal
+- [X] vite-pluginで指定するviteのバージョンが低すぎて、viteが古い
+  - 最新が入っていた
+  - resolusions->overridesにして--forceを不要にした
+  - o @crxjs/vite-plugin@beta
+- [X] svelte-i18n
+
+
 ** DOING ブラウザー拡張 Banban Ponpon                            :ponpon:ext:
 <2024-10-08 Tue>
 
 - [X] Productionと一緒に使うと ppa-hiranoとrequest.landが混じってpostMessage()でエラー
   - ボタンをつけてみたが、各ページのCSとBSの定数も書き換えられない
   - run prod新設
-- [ ] iconファイルをロードして、snackbarのcloseを消す
 - [ ] エラーが出たタブのクローズ
-- [ ] Kitchenでエラー
-    Uncaught (in promise) TypeError: Cannot read properties of null (reading 'push')
-        at pushToKitchen (content.svelte.js:609:11)
-        at content.svelte.js:595:5
-        at Generator.next (<anonymous>)
-        at content.svelte.js:489:67
-        at new Promise (<anonymous>)
-        at __awaiter (content.svelte.js:466:10)
-        at sendParsePageResult (content.svelte.js:564:10)
-        at content.svelte.js:542:10
-        at Generator.next (<anonymous>)
-        at fulfilled (content.svelte.js:469:22)
-    pushToKitchen @ content.svelte.js:609
-    (anonymous) @ content.svelte.js:595
-    (anonymous) @ content.svelte.js:489
-    __awaiter @ content.svelte.js:466
-    sendParsePageResult @ content.svelte.js:564
-    (anonymous) @ content.svelte.js:542
-    fulfilled @ content.svelte.js:469
-    Promise.then
-    step @ content.svelte.js:486
-    fulfilled @ content.svelte.js:469
-    Promise.then
-    step @ content.svelte.js:486
-    (anonymous) @ content.svelte.js:489
-    __awaiter @ content.svelte.js:466
-    linkClickHandler @ content.svelte.js:527Understand this error
 
-** DOING ブラウザー拡張でのユーザー認証 :user:login:ponpon:ext:
+** DOING Ponponでのユーザー認証                       :user:login:ponpon:ext:
 <2024-10-03 Thu>
 
 - [X] ログインのtimeout
@@ -57,30 +44,83 @@
   - window.opener以外には届かないため、'*'でセキュリティ上の問題はない
 
 - [X] page scriptからcontent scriptにpostMessage(msg, chrome-extension://xx)できない
-  - '*'も届かない
-  - コンテンツスクリプトやウェブコンテキストスクリプトは targetOrigin を拡張機能 (バックグラウンドスクリプトやコンテンツスクリプト) と直接通信するために指定することはできません。ウェブやコンテンツのスクリプトは、 window.postMessage を targetOrigin を "*" にして使用することで、すべてのリスナーにブロードキャストすることができますが、これは拡張機能がそのようなメッセージのオリジンを特定することができないこと、他のリスナー (制御するべきでないものも含む) が待ち受けしている可能性があるため推奨されません。
-  - DOMに挿入する
+
 
 - [X] 関数の整備 ATの置き場所
 - [X] タブにリクエストランドがあり、ログインしていないときにATがnullになる
-- [ ] login-proxy-viewでデフォルトのHHH//h-comと、select passkeyを出す
-  - [ ] cookie.land_idがない場合は大きいselectボタン
-  - [ ] cookie.land_idがある場合は小さいselectボタン
+- [X] login-proxy-viewでデフォルトのHHH//h-comと、select passkeyを出す
+  - [X] cookie.land_idがない場合は大きいselectボタン
+  - [X] cookie.land_idがある場合は小さいselectボタン
+- [X] land_idも返す
 - [ ] 複数のATとユーザーの関係の整理
-- [ ] land_idも返す
+- [ ] ログインして得たATを保持
 - [ ] DOMのATを消す
 
-** DOING Svelte :ext:ponpon:
-<2024-10-08 Tue>
+** DONE Page ScriptからContent ScriptにATを渡す
+<2024-10-11 Fri>
 
-- [X] Svelte Material UIを独自のボタンに置き換える
-  - ページスクリプトのCSSが変わってしまうため
-  - [X] button
-  - [X] toast
-  - [X] modal
-- [X] vite-pluginで指定するviteのバージョンが低すぎて、viteが古い
-  - 最新が入っていた
-  - resolusions->overridesにして--forceを不要にした
-  - o @crxjs/vite-plugin@beta
-- [X] svelte-i18n
+- x page scriptからcontent scriptにpostMessage(msg, chrome-extension://xx)できない
+        window.addEventListener('message', (event: MessageEvent) => {
+- '*'も届かない
+  - コンテンツスクリプトやウェブコンテキストスクリプトは targetOrigin を拡張機能 (バックグラウンドス
+    クリプトやコンテンツスクリプト) と直接通信するために指定することはできません。ウェブやコンテンツ
+    のスクリプトは、 window.postMessage を targetOrigin を "*" にして使用することで、すべてのリスナー
+    にブロードキャストすることができますが、これは拡張機能がそのようなメッセージのオリジンを特定する
+    ことができないこと、他のリスナー (制御するべきでないものも含む) が待ち受けしている可能性があるた
+    め推奨されません。
+- x PSがDOMに挿入し、CSがMutationをdetectする
+  - できたが面倒
+- [[https://developer.apple.com/documentation/safariservices/messaging-between-a-webpage-and-your-safari-web-extension][SafariとChromeではPSからCSにsendMessage()できる]]  [[https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/externally_connectable][MDN]]によればFFでは使えない
+
+- document.dispatchEvent <2024-10-11 Fri>  どのブラウザーでも使える
+  - 他のoriginのスクリプトに傍受されないように、CSが乱数を生成してPSに渡し、PSは乱数をevent名にして値を返す
+
+    dispathEvent(new CustomEvent(乱数, { detail: userInfo }))
+
+  - 実装
+            // handler for ask by Ponpon extension for UserInfo including access token
+            if (event.origin == conf.originUri && event.data?.type === 'getAccessTokenFromPageScript') {
+                const userInfoInquiry: UserInfoInquiry = event.data;
+                let userInfo: UserInfo|string = 'null';
+                if (this.hasValidAccessToken()) {
+                    userInfo = {
+                        at:              this.userService.accessToken,
+                        atExp:           this.userService.accessTokenExpiration,
+                        land_id:         localStorage.land_id,
+                        primaryColor:    App.app.primaryColor,
+                        accentColor:     App.app.accentColor,
+                        appBarTextColor: App.app.appBarTextColor
+                    }
+                }
+                this.log.info('sending answerAccessTokenFromPageScript');
+                document.dispatchEvent(new CustomEvent(userInfoInquiry.returnEvent, { detail: userInfo }));
+            }
+        });
+
+** TODO Svelet LSP
+** TODO primaryColorで色を変える
+** DOING ログイン、開いているボードをどう扱うか仕様
+<2024-10-11 Fri>
+
+- 要件
+  - ユーザーは、開いているボードにカードが入ると思っている
+  - ユーザーは、ポンポンの設定をしたくない。ボードを開くたびにポンポンの設定をしたいとは思わない
+  - Safari PWAではPonponは動かない。サーバーを介する必要がある
+
+- 案
+  - スタートボタンを押したとき
+    - hm-appがある
+      - ATを得てputCardで使う
+      - バンバンボードを開いている -> CSを介してボードのIDとタイトルを表示
+        - カードの追加ではボードに直接入れる
+      - バンバンボードを開いていない
+        - サーバーからgetLastCardboardID APIで、最後に開いたボードのIDをタイトルを得て表示
+        - カードの追加ではputCardExt(AT, CardboardID)
+      - hm-appはログインをしたとき、ボードを変更したときにCSを介してMainに通知
+    - ない (SafariのPWAが開いているかはわからない)
+      - proxyでログインする
+      - サーバーからgetLastCardboardID APIで、最後に開いたボードのIDをタイトルを得て表示
+      - カードの追加ではputCardExt(AT, CardboardID)
+  - Originが同じ[[https://www.netguru.com/blog/how-to-share-session-cookie-or-state-between-pwa-in-standalone-mode-and-safari-on-ios][PWAとSafariのhm-appでデータを共有]]
+    - x Safariでhm-appが動いている必要がある
   -
