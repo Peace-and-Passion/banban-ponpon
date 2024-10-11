@@ -1,5 +1,13 @@
+/**
+     Banban Ponpon: Protocol definitions
+
+     @author Hirano Satoshi, Togashi Ayuto
+     @copyright 2024 Peace and Passion
+     @since 2024/10/02
+ */
 import { ProtocolWithReturn } from "webext-bridge";
 import { ParsePageResult } from './content/page_parser/types';
+import { UserInfo, UserInfoInquiry } from './types';
 
 declare module "webext-bridge" {
     export interface ProtocolMap {
@@ -30,7 +38,7 @@ declare module "webext-bridge" {
 
            Return:  Access token.
          */
-        getAccessTokenFromBackground: ProtocolWithReturn<{ }, string|null>;
+        getAccessTokenFromBackground: ProtocolWithReturn<{ }, UserInfo>;
 
         /* Get Access Token from context script.
 
@@ -39,6 +47,6 @@ declare module "webext-bridge" {
 
            Return:  Access token.
          */
-        getAccessTokenFromContextScript: ProtocolWithReturn<{ }, string|null>;
+        getAccessTokenFromContextScript: ProtocolWithReturn<{ }, UserInfo>;
     }
 }

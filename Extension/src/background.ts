@@ -8,6 +8,7 @@
 import browser from 'webextension-polyfill';
 import { sendMessage, onMessage } from 'webext-bridge/background';
 import * as conf from './conf';
+import type { UserInfo } from '../../../banban-ponpon/Extension/src/types';
 
 console.log('background script running...');
 
@@ -57,15 +58,19 @@ onMessage('getAccessTokenFromBackground', getAccessTokenFromTab);
 
 export async function getAccessTokenFromTab(): Promise<string|null> {
     const tabs = await browser.tabs.query({ url: conf.originUri + '/*' });
-    const promises = [];
+    const promises: Promise<UserInfo|null>[] = [];
 
     for (const tab of tabs) {
         const promise = (async () => {
             try {
                 console.log('getAccessTokenFromBackground: sending getAccessTokenFromContextScript to ' + tab.id)
-                const accessToken = await sendMessage('getAccessTokenFromContextScript', {}, 'content-script@' + tab.id);
-                console.log(`getAccessTokenFromBackground: got AT ${accessToken} from tab ${tab.id}`);
-                return accessToken;
+                const userInfo: UserInfo|null = await sendMessage('getAccessTokenFromContextScript', {}, 'content-script@' + tab.id);
+                if (userInfo) {
+                    console.log(`getAccessTokenFromBackground: got AT ${userInfo.at} from tab ${tab.id}`);
+                } else {
+                    console.log(`getAccessTokenFromBackground: failed from tab ${tab.id}`);
+                }
+                return userInfo;
             } catch (error) {
                 console.error(`getAccessTokenFromBackground: Failed to get AT from tab ${tab.id}:`, error);
                 return null;

@@ -176,6 +176,8 @@
     </div>
     <div class="ponpon-tap">{$_('tap')}</div>
 
+      <div>{$loginComponent?.userInfo?.land_id}</div>
+
     <!-- Get Access Token button -->
     <Button on:click={getAccessToken} small="true" variant="flat">
       AT

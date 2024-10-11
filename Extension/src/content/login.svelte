@@ -9,15 +9,19 @@
 
 <script lang="ts">
  import browser from 'webextension-polyfill';
+ import { writable } from 'svelte/store';
  import Modal from '../resources/Modal.svelte';
  import * as conf from '../conf';
  import Button from '../resources/button.svelte';
  import { sendMessage, onMessage } from 'webext-bridge/content-script';
- import { Passkey } from './passkey';
+ import { Passkey, randomString } from './passkey';
  import '../style.scss';
+ import type { UserInfo, UserInfoInquiry } from '../types';
 
- let open     = false;
- const passkey = new Passkey();
+ let open     = false;                // Modal open flat
+ export let userInfo = writable('');  // ローカルのストアとして userInfo をエクスポート
+// export let userInfo: UserInfo;       // User info
+ const passkey = new Passkey();       // Passkey authenticator
 
  export function openLoginModal() {
      open = true;
@@ -27,10 +31,11 @@
     Gets an access token from any of running Requestland in tabs, or open Login dialog.
   */
  export async function getAccessToken(): string {
-     const accessToken: string|null = await sendMessage('getAccessTokenFromBackground', {}, 'background');
-     if (accessToken) {
-         console.log('Access Token found:', accessToken);
-         return accessToken;
+     const _userInfo: UserInfo|null = await sendMessage('getAccessTokenFromBackground', {}, 'background');
+     if (_userInfo) {
+         userInfo.set(_userInfo);
+         console.log('Access Token found:', userInfo.at);
+         return userInfo.at;
      } else {
          console.log('No tabs responded. Triggering login dialog.');
          return login();
@@ -38,7 +43,7 @@
  }
 
  /**
-    Login. NOT USED.
+    Open login dialog
   */
  async function login(): string {
      const accessToken = await passkey.authenticate({land_id_or_userID: undefined});
@@ -63,23 +68,17 @@
 
      // ask hm-app to send AT or null
      return new Promise<void>(async (resolve, reject) => {
-         const observer = new MutationObserver((mutations) => {
-             mutations.forEach((mutation) => {
-                 const metaTag = document.querySelector('meta[name="accessToken"]');
-                 if (metaTag) {
-                     const accessToken = metaTag.getAttribute('content');
-                     console.log('Access Token:', accessToken);
-                     observer.disconnect();
+         const returnEvent = randomString(10);
 
-                     resolve(accessToken === 'null' ? null : accessToken);
-                 }
-             });
-         });
-
-         // detect mutation of DOM
-         observer.observe(document.head, { childList: true, subtree: true });
-
-         window.postMessage('getAccessTokenFromPageScript', conf.originUri);
+         const returnEventHandler = (event: CustomEvent) => {
+             console.log('returnEventHandler: received ', event.detail);
+             const userInfo: UserInfo|string = event.detail;
+             document.removeEventListener(returnEvent, returnEventHandler);
+             resolve(userInfo === 'null' ? null : userInfo);
+         }
+         document.addEventListener(returnEvent, returnEventHandler);
+         const userInfoInquiry: UserInfoInquiry = {type: 'getAccessTokenFromPageScript', returnEvent: returnEvent };
+         window.postMessage(userInfoInquiry, conf.originUri);
      });
  });
 
